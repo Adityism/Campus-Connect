@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #7c1ee8;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            margin-left: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #7c1ee8;
+        }
+
+        .header .back-btn {
+            background-color: transparent;
+            border: none;
+            color: #7c1ee8;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .header .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        .settings-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .settings-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-card h3 {
+            margin-top: 0;
+            color: #7c1ee8;
+        }
+
+        .settings-card label {
+            margin-bottom: 5px;
+        }
+
+        .settings-card input[type="text"],
+        .settings-card input[type="email"],
+        .settings-card input[type="password"],
+        .settings-card select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .settings-card input[type="text"]:focus,
+        .settings-card input[type="email"]:focus,
+        .settings-card input[type="password"]:focus,
+        .settings-card select:focus {
+            border-color: #7c1ee8;
+            outline: none;
+            background-color: #f0f8ff;
+        }
+
+        .save-btn {
+            background-color: #7c1ee8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .save-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .customize-theme {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .customize-theme:hover {
+            transform: scale(1.02);
+        }
+
+        .customize-theme h2 {
+            color: #0e5eb4;
+            margin-bottom: 10px;
+        }
+
+        .theme-option {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.3s, transform 0.3s;
+        }
+
+        .theme-option:hover {
+            border: 2px solid #333;
+            transform: scale(1.1);
+        }
+
+        .theme-light { background-color: #d8d8d8; }
+        .theme-dark { background-color: #343a40; }
+        .theme-blue { background-color: #134c89; }
+        .theme-green { background-color: #15772c; }
+        .theme-red { background-color: #a5202d; }
+        .theme-yellow { background-color: #afba16; }
+
+        .content-section {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Settings</h2>
+        <a href="#" onclick="showSection('general')">General</a>
+        <a href="#" onclick="showSection('account')">Account</a>
+        <a href="#" onclick="showSection('notifications')">Notifications</a>
+        <a href="#" onclick="showSection('privacy')">Privacy</a>
+        <a href="#" onclick="showSection('help')">Help</a>
+
+        <div class="customize-theme">
+            <h2>Customize your view</h2>
+            <p class="text-muted">Manage your font size, color, and background</p>
+            <div class="theme-option theme-light" onclick="changeTheme('light')"></div>
+            <div class="theme-option theme-dark" onclick="changeTheme('dark')"></div>
+            <div class="theme-option theme-blue" onclick="changeTheme('blue')"></div>
+            <div class="theme-option theme-green" onclick="changeTheme('green')"></div>
+            <div class="theme-option theme-red" onclick="changeTheme('red')"></div>
+            <div class="theme-option theme-yellow" onclick="changeTheme('yellow')"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Settings</h1>
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <!-- General Settings Section -->
+        <div id="general" class="content-section active">
+            <div class="settings-card">
+                <h3>General Settings</h3>
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+
+                <label for="language">Language</label>
+                <select id="language">
+                    <option value="english">English</option>
+                    <option value="spanish">Spanish</option>
+                    <option value="french">French</option>
+                    <option value="german">German</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Account Settings Section -->
+        <div id="account" class="content-section">
+            <div class="settings-card">
+                <h3>Account Settings</h3>
+                <label for="current-password">Current Password</label>
+                <input type="password" id="current-password" placeholder="Enter your current password">
+
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="Enter your new password">
+
+                <label for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your new password">
+            </div>
+        </div>
+
+        <!-- Notification Settings Section -->
+        <div id="notifications" class="content-section">
+            <div class="settings-card">
+                <h3>Notification Settings</h3>
+                <label>
+                    <input type="checkbox" id="email-notifications"> Email Notifications
+                </label><br>
+                <label>
+                    <input type="checkbox" id="sms-notifications"> SMS Notifications
+                </label><br>
+                <label>
+                    <input type="checkbox" id="push-notifications"> Push Notifications
+                </label>
+            </div>
+        </div>
+
+        <!-- Privacy Settings Section -->
+        <div id="privacy" class="content-section">
+            <div class="settings-card">
+                <h3>Privacy Settings</h3>
+                <p>Manage your privacy settings here.</p>
+                <label>
+                    <input type="checkbox" id="public-profile"> Make profile public
+                </label><br>
+                <label>
+                    <input type="checkbox" id="searchable"> Allow search engines to find me
+                </label>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div id="help" class="content-section">
+            <div class="settings-card">
+                <h3>Help</h3>
+                <p>Contact support for help.</p>
+                <p>Email: ayushshome10@gmail.com</p>
+                <p>Phone: 123-456-7890</p>
+            </div>
+        </div>
+
+        <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function showSection(section) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach((sec) => {
+                sec.classList.remove('active');
+            });
+            document.getElementById(section).classList.add('active');
+        }
+
+        function saveSettings() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const emailNotifications = document.getElementById('email-notifications').checked;
+            const smsNotifications = document.getElementById('sms-notifications').checked;
+            const pushNotifications = document.getElementById('push-notifications').checked;
+
+            const settings = {
+                username,
+                email,
+                currentPassword,
+                newPassword,
+                emailNotifications,
+                smsNotifications,
+                pushNotifications,
+            };
+
+            console.log('Settings saved:', settings);
+            alert("Settings saved successfully!");
+        }
+
+        function changeTheme(theme) {
+            switch (theme) {
+                case 'light':
+                    document.body.style.backgroundColor = '#f0f0f0';
+                    break;
+                case 'dark':
+                    document.body.style.backgroundColor = '#343a40';
+                    break;
+                case 'blue':
+                    document.body.style.backgroundColor = '#007bff';
+                    break;
+                case 'green':
+                    document.body.style.backgroundColor = '#28a745';
+                    break;
+                case 'red':
+                    document.body.style.backgroundColor = '#dc3545';
+                    break;
+                default:
+                    document.body.style.backgroundColor = '#f5f5f5';
+            }
+        }
+    </script>
+
+</body>
+</html>

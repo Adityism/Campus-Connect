@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --primary-hover: #805ad5;
+            --danger-color: #ff3333;
+            --danger-hover: #ff5555;
+            --primary-bg: #141414;
+            --sidebar-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --card-hover: #1d1d1d;
+            --border-color: #2a2a2a;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --shadow-primary: 0 5px 15px rgba(108, 92, 231, 0.2);
+            --shadow-danger: 0 5px 15px rgba(255, 51, 51, 0.2);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh);
+            transition: var(--transition);
+        }
+        
+        .sidebar {
+            width: 270px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-right: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo-section {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg, #000, #000);
+            border-bottom: 1px solid #000;
+            text-align: center;
+            left: 10px;
+            position: relative;
+            width: 100px;
+            height: auto;
+        }
+        
+        .logo-image {
+            width: 135px;
+            height: auto;
+        }
+        
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Search and navigation */
+        .search-section {
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 8px 15px;
+            transition: var(--transition);
+        }
+        
+        .search-bar:focus-within {
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            width: 100%;
+            outline: none;
+            margin-left: 8px;
+        }
+        
+        .nav-section {
+            padding: 10px 0;
+        }
+        
+        .nav-title {
+            padding: 10px 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--card-bg);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background-color: var(--card-bg);
+            border-left: 3px solid var(--primary-color);
+            padding-left: 17px;
+        }
+        
+        .nav-icon {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-text {
+            color: var(--primary-color);
+        }
+        
+        .nav-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        
+        .tag {
+            font-size: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: auto;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* Profile section */
+        .profile-section {
+            margin-top: auto;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            background-color: #0a0a0a;
+        }
+        
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), #a29bfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .profile-details {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .profile-level {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .settings-icon {
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .settings-icon:hover {
+            color: var(--primary-color);
+            transform: rotate(30deg);
+        }
+        
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .back-button {
+            width: 40px;
+            height: 40px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .back-button:hover {
+            background-color: var(--border-color);
+            transform: translateX(-3px);
+        }
+        
+        .header-search {
+            flex: 1;
+            margin: 0 20px;
+        }
+        
+        .header-search input {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .header-search input:focus {
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        
+        /* User info */
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time-display {
+            margin-right: 15px;
+            text-align: right;
+        }
+        
+        .time-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .time-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .points-display, .language-selector {
+            background-color: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .points-display {
+            margin-right: 15px;
+        }
+        
+        .points-display:hover, .language-selector:hover {
+            background-color: var(--border-color);
+            transform: translateY(-2px);
+        }
+        
+        .points-icon {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        
+        .points-value {
+            font-weight: 500;
+        }
+        
+        .language-selector {
+            cursor: pointer;
+        }
+        
+        /* Feature cards */
+        .feature-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(108, 92, 231, 0.3);
+        }
+        
+        .card-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+            z-index: 2;
+        }
+        
+        .featured-content {
+            max-width: 70%;
+            margin-left: 20px;
+            z-index: 1;
+        }
+        
+        .featured-heading {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .update-text {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .button-icon {
+            margin-right: 8px;
+        }
+        
+        .featured-image {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .featured-image {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+        
+        /* Dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 25px;
+        }
+        
+        .stats-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            background-color: var(--card-hover);
+        }
+        
+        .stats-card:nth-child(1) { animation-delay: 0.1s; }
+        .stats-card:nth-child(2) { animation-delay: 0.2s; }
+        .stats-card:nth-child(3) { animation-delay: 0.3s; }
+        .stats-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .view-all:hover {
+            color: #a29bfe;
+            text-decoration: underline;
+        }
+        
+        /* Lists */
+        .query-list, .class-list, .materials-list {
+            list-style: none;
+        }
+        
+
+        .query-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .query-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .query-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .query-details {
+            flex: 1;
+        }
+        
+        .student-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .query-preview {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .query-action {
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            background-color: #6c5ce7;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(108, 92, 231, 0.2);
+        }
+        
+        .query-action:hover {
+            background-color: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(108, 92, 231, 0.3);
+        }
+        
+        .class-list {
+            list-style: none;
+        }
+        
+        .class-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .class-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .class-item:last-child {
+            border-bottom: none;
+        }
+        .logo-section {
+            text-align: center;
+            padding: 15px;
+            left:10px;
+            position: relative;
+            width: 100px;
+            height: auto;
+        }
+        
+        .logo-image {
+            width: 135px; /* Adjust as needed */
+            height: auto;
+        }
+        .class-time {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c5ce7;
+        }
+        
+        .duration {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .class-details {
+            flex: 1;
+            margin-left: 15px;
+            padding-left: 15px;
+            border-left: 3px solid #6c5ce7;
+        }
+        
+        .class-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .class-location {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .course-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 10px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .cs101 {
+            background-color: rgba(0, 153, 255, 0.2);
+            color: #0099ff;
+        }
+        
+        .cs201 {
+            background-color: rgba(255, 153, 0, 0.2);
+            color: #ff9900;
+        }
+        
+        .cs304 {
+            background-color: rgba(0, 204, 102, 0.2);
+            color: #00cc66;
+        }
+        
+        .materials-list {
+            list-style: none;
+        }
+        
+        .material-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .material-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(108, 92, 231, 0.05);
+            padding-left: 5px;
+            border-radius: 5px;
+        }
+        
+        .material-item:last-child {
+            border-bottom: none;
+        }
+        
+        .material-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .pdf-icon {
+            background-color: rgba(255, 77, 77, 0.2);
+            color: #ff4d4d;
+        }
+        
+        .doc-icon {
+            background-color: rgba(0, 153, 255, 0.2);
+            color: #0099ff;
+        }
+        
+        .ppt-icon {
+            background-color: rgba(255, 153, 0, 0.2);
+            color: #ff9900;
+        }
+        
+        .material-details {
+            flex: 1;
+        }
+        
+        .material-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .material-info {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .notification-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2a2a;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 2px #6c5ce7;
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: none;
+        }
+        
+        .send-button {
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
+        }
+        
+        .send-button:hover {
+            background-color: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        }
+        
+        .send-icon {
+            margin-right: 8px;
+        }
+        
+        .logout-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.2);
+        }
+        
+        .logout-button:hover {
+            background-color: #ff5555;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 51, 51, 0.3);
+        }
+        
+        .logout-icon {
+            margin-right: 8px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stats-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .stats-card:nth-child(1) { animation-delay: 0.1s; }
+        .stats-card:nth-child(2) { animation-delay: 0.2s; }
+        .stats-card:nth-child(3) { animation-delay: 0.3s; }
+        .stats-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Loading effects */
+        .shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            to { left: 100%; }
+        }
+        
+        /* Notification counter */
+        .notification-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff3333;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(255, 51, 51, 0.3);
+        }
+
+        /* Icons using unicode characters for simplicity */
+        .icon-dashboard::before { content: "📊"; }
+        .icon-courses::before { content: "📚"; }
+        .icon-schedule::before { content: "📅"; }
+        .icon-students::before { content: "👥"; }
+        .icon-messages::before { content: "💬"; }
+        .icon-grades::before { content: "📝"; }
+        .icon-notifications::before { content: "🔔"; }
+        .icon-settings::before { content: "⚙️"; }
+        .icon-search::before { content: "🔍"; }
+        .icon-back::before { content: "←"; }
+        .icon-points::before { content: "💎"; }
+        .icon-plus::before { content: "+"; }
+        .icon-document::before { content: "📄"; }
+        .icon-word::before { content: "📘"; }
+        .icon-powerpoint::before { content: "📊"; }
+        .icon-logout::before { content: "🚪"; }
+        .icon-send::before { content: "📤"; }
+        .icon-left::before { content: "←"; }
+        .icon-right::before { content: "→"; }
+        .icon-calendar::before { content: "📆"; }
+        .icon-upload::before { content: "📤"; }
+
+        /* Add these new styles */
+        :root {
+            --primary-bg: #141414;
+            --sidebar-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --border-color: #2a2a2a;
+        }
+
+        body.light-mode {
+            --primary-bg: #f5f5f7;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-color: var(--border-color);
+        }
+
+        .stats-card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .nav-text {
+            color: var(--text-primary);
+        }
+
+        .logout-nav {
+            margin-top: 20px;
+            color: #ff3333;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .logout-nav:hover {
+            background-color: rgba(255, 51, 51, 0.1);
+        }
+
+        .logout-nav .nav-text {
+            color: #ff3333;
+        }
+
+        #themeToggle {
+            cursor: pointer;
+        }
+
+        /* Update form controls for light mode */
+        .light-mode .form-control {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .light-mode .search-bar {
+            background-color: var(--card-bg);
+        }
+
+        .light-mode .feature-card {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Update color variables */
+        :root {
+            --primary-bg: #141414;
+            --sidebar-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --border-color: #2a2a2a;
+            --purple-gradient: linear-gradient(90deg, #6c5ce7, #805ad5);
+            --accent-color: #6c5ce7;
+        }
+
+        body.light-mode {
+            --primary-bg: #f5f5f7;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+            --purple-gradient: linear-gradient(90deg, #6c5ce7, #805ad5);
+            --accent-color: #6c5ce7;
+        }
+
+        /* Add/Update these styles */
+        .header-search input {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .time-display {
+            background-color: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .time-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .points-display {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-card {
+            background: var(--purple-gradient);
+        }
+
+        .stats-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .card-header h2 {
+            color: var(--text-primary);
+        }
+
+        .query-preview, 
+        .material-info,
+        .class-location {
+            color: var(--text-secondary);
+        }
+
+        /* Remove the floating logout button */
+        .logout-button {
+            display: none;
+        }
+
+        /* Update form controls */
+        .form-control {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Update the language selector */
+        .language-selector {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .attendance-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateX(5px);
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .action-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .summary-item .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .summary-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        /* Light mode adjustments */
+        .light-mode .quick-action-btn {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .light-mode .quick-action-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Slider Styles */
+        .updates-slider {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Slider pagination */
+        .slider-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+        }
+        
+        .slider-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            margin: 0 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .slider-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        /* Calendar Styles - designed to match notification card */
+        .calendar-wrapper {
+            height: 180px;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calendar-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 184, 148, 0.3);
+        }
+        
+        .calendar-wrapper .card-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+            z-index: 2;
+        }
+        
+        .calendar-container {
+            height: calc(100% - 40px);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px;
+            margin-top: 40px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .calendar-nav {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        #monthDisplay {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 3px;
+        }
+        
+        .weekday {
+            text-align: center;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 2px 0;
+            font-weight: 500;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(0, 1fr);
+            gap: 2px;
+            flex: 1;
+        }
+        
+        .calendar-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            aspect-ratio: 1;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .calendar-day.today {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+        
+        .calendar-day.event {
+            position: relative;
+        }
+        
+        .calendar-day.event::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-section">
+        
+        <video src="{{ url_for('static', filename='videos/newlogo.mp4') }}" alt="Campus Connect Logo" class="logo-image">
+    </div>
+        
+        <div class="search-section">
+            <div class="search-bar">
+                <div class="search-icon icon-search"></div>
+                <input type="text" placeholder="Search...">
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Navigate</div>
+            <div class="nav-item active">
+                <div class="nav-icon icon-dashboard"></div>
+                <div class="nav-text">Dashboard</div>
+            </div>
+            <div class="nav-item" onclick="window.location.href='/faculty_portal/courses'">
+                <div class="nav-icon icon-courses"></div>
+                <div class="nav-text">Courses</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon icon-schedule"></div>
+                <div class="nav-text">Schedule</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon icon-students"></div>
+                <div class="nav-text">Students</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon icon-messages"></div>
+                <div class="nav-text">Messages</div>
+                <div class="tag">3</div>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Placeholder</div>
+            <div class="nav-item">
+                <div class="nav-icon icon-grades"></div>
+                <div class="nav-text">Grades</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon icon-notifications"></div>
+                <div class="nav-text">Notifications</div>
+            </div>
+            <!-- Add theme toggle button -->
+            <div class="nav-item" id="themeToggle">
+                <div class="nav-icon icon-theme">🌙</div>
+                <div class="nav-text">Dark Mode</div>
+            </div>
+            <!-- Add logout button -->
+            <div class="nav-item logout-nav" onclick="window.location.href='/logout'">
+                <div class="nav-icon icon-logout"></div>
+                <div class="nav-text">Logout</div>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <div class="profile-image">JS</div>
+            <div class="profile-details">
+                <div class="profile-name">Dr. Sumit Sharma</div>
+                <div class="profile-level">Level 15</div>
+            </div>
+            <div class="settings-icon icon-settings"></div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="back-button">
+                <div class="icon-back"></div>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <div class="user-info">
+                <div class="time-display">
+                    <div class="time-value">04:56 PM</div>
+                </div>
+                
+              
+                
+                <div class="language-selector">
+                    ENG
+                </div>
+            </div>
+        </div>
+        
+        <!-- Update the feature cards section -->
+        <div class="feature-cards">
+            <div class="feature-card">
+                
+                <div class="featured-content">
+                    <div class="updates-slider">
+                        <div class="slide active">
+                            <div class="featured-heading">Weekly Academic Updates</div>
+                            <p class="update-text">Mid-term examinations scheduled for next week</p>
+                        </div>
+                        <div class="slide">
+                            <div class="featured-heading">Department Meeting</div>
+                            <p class="update-text">Faculty meeting on Friday at 2 PM</p>
+                        </div>
+                        <div class="slide">
+                            <div class="featured-heading">Grade Submission</div>
+                            <p class="update-text">Assignment grades due by this weekend</p>
+                        </div>
+                        <div class="slide">
+                            <div class="featured-heading">Workshop</div>
+                            <p class="update-text">AI/ML Workshop next Tuesday</p>
+                        </div>
+                    </div>
+                    <button class="action-button">
+                        <span class="button-icon icon-plus"></span>
+                        <span>Send Notification</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="calendar-wrapper">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="prevMonth()">&lt;</button>
+                        <h3 id="monthDisplay"></h3>
+                        <button class="calendar-nav" onclick="nextMonth()">&gt;</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+                    <div id="calendarDays" class="calendar-days"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Pending Queries -->
+            <div class="stats-card shimmer">
+                <div class="card-header">
+                    <h2>Pending Queries</h2>
+                    <div class="view-all">View All</div>
+                </div>
+                <ul class="query-list">
+                    <li class="query-item">
+                        <div class="student-avatar">JS</div>
+                        <div class="query-details">
+                            <div class="student-name">John Smith</div>
+                            <div class="query-preview">Question about assignment 3</div>
+                        </div>
+                        <div class="query-action">Reply</div>
+                    </li>
+                    <li class="query-item">
+                        <div class="student-avatar">AL</div>
+                        <div class="query-details">
+                            <div class="student-name">Amy Lee</div>
+                            <div class="query-preview">Request for deadline extension</div>
+                        </div>
+                        <div class="query-action">Reply</div>
+                    </li>
+                    <li class="query-item">
+                        <div class="student-avatar">RK</div>
+                        <div class="query-details">
+                            <div class="student-name">Rahul Kumar</div>
+                            <div class="query-preview">Clarification needed on project</div>
+                        </div>
+                        <div class="query-action">Reply</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Add new Attendance Management Card -->
+            <div class="stats-card">
+                <div class="card-header">
+                    <h2>Attendance Management</h2>
+                    <div class="view-all">View All</div>
+                </div>
+                <div class="attendance-actions">
+                    <button onclick="markAttendance()" class="quick-action-btn">
+                        <span class="action-icon">📝</span>
+                        <span>Mark Attendance</span>
+                    </button>
+                    <button onclick="uploadAttendance()" class="quick-action-btn">
+                        <span class="action-icon">📤</span>
+                        <span>Bulk Upload</span>
+                    </button>
+                    <button onclick="viewReports()" class="quick-action-btn">
+                        <span class="action-icon">📊</span>
+                        <span>View Reports</span>
+                    </button>
+                </div>
+                <div class="attendance-summary">
+                    <div class="summary-item">
+                        <span class="label">Today's Classes</span>
+                        <span class="value">4</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Marked</span>
+                        <span class="value">2/4</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Average</span>
+                        <span class="value">85%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Materials section -->
+            <div class="stats-card">
+                <div class="card-header">
+                    <h2>Course Materials</h2>
+                    <div class="view-all">Upload New</div>
+                </div>
+                <ul class="materials-list">
+                    <li class="material-item">
+                        <div class="material-icon pdf-icon">📄</div>
+                        <div class="material-details">
+                            <div class="material-name">Week 4 Lab Manual</div>
+                            <div class="material-info">PDF • 2.4 MB • Uploaded today</div>
+                        </div>
+                    </li>
+                    <li class="material-item">
+                        <div class="material-icon doc-icon">📘</div>
+                        <div class="material-details">
+                            <div class="material-name">Programming Notes</div>
+                            <div class="material-info">DOC • 1.8 MB • 2 days ago</div>
+                        </div>
+                    </li>
+                    <li class="material-item">
+                        <div class="material-icon ppt-icon">📊</div>
+                        <div class="material-details">
+                            <div class="material-name">Database Lecture</div>
+                            <div class="material-info">PPT • 5.6 MB • 3 days ago</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Send Notification section -->
+            <div class="stats-card">
+                <div class="card-header">
+                    <h2>Send Notification</h2>
+                </div>
+                <form class="notification-form">
+                    <div class="form-group">
+                        <select class="form-control" required>
+                            <option value="">Select Course</option>
+                            <option value="cs101">CS101 - Introduction to Programming</option>
+                            <option value="cs201">CS201 - Data Structures</option>
+                            <option value="cs304">CS304 - Database Systems</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" required>
+                            <option value="">Notification Type</option>
+                            <option value="announcement">Announcement</option>
+                            <option value="assignment">Assignment</option>
+                            <option value="reminder">Reminder</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="send-button">
+                        <span class="send-icon">📤</span>
+                        Send Notification
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update time display
+        function updateTime() {
+            const now = new Date();
+            const timeValue = document.querySelector('.time-value');
+            timeValue.textContent = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        setInterval(updateTime, 60000);
+        updateTime();
+
+        // Handle notification form
+        const notificationForm = document.querySelector('.notification-form');
+        notificationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add your form submission logic here
+            alert('Notification sent successfully!');
+            notificationForm.reset();
+        });
+
+        // Handle material upload
+        document.querySelector('.view-all').addEventListener('click', function() {
+            // Add your upload logic here
+            alert('Opening file upload...');
+        });
+
+        // Handle query replies
+        document.querySelectorAll('.query-action').forEach(button => {
+            button.addEventListener('click', function() {
+                const studentName = this.parentElement.querySelector('.student-name').textContent;
+                // Add your reply logic here
+                alert(`Opening reply window for ${studentName}...`);
+            });
+        });
+
+        // Add animation when hovering over feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add this to your existing script section
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('.icon-theme');
+            const themeText = themeToggle.querySelector('.nav-text');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.toggle('light-mode', savedTheme === 'light');
+            updateThemeUI(savedTheme === 'light');
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+                updateThemeUI(isLight);
+            });
+
+            function updateThemeUI(isLight) {
+                themeIcon.textContent = isLight ? '☀️' : '🌙';
+                themeText.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+            }
+
+            // Update all existing event listeners to work with theme changes
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // Attendance management functions
+        function markAttendance() {
+            window.location.href = '/faculty_portal/attendance/mark';
+        }
+
+        function uploadAttendance() {
+            // Create and trigger hidden file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.csv';
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Handle CSV upload
+                    alert('CSV upload will be implemented here');
+                }
+            };
+            fileInput.click();
+        }
+
+        function viewReports() {
+            window.location.href = '/faculty_portal/attendance/reports';
+        }
+
+        // Add to your DOM content loaded event
+        document.addEventListener('DOMContentLoaded', function() {
+            // ...existing initialization code...
+
+            // Add shimmer effect to attendance card
+            const attendanceCard = document.querySelector('.stats-card:nth-child(2)');
+            attendanceCard.classList.add('shimmer');
+        });
+
+        // Slider functionality
+        function initSlider() {
+            const slides = document.querySelectorAll('.slide');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            // Start the slider
+            showSlide(0);
+            setInterval(nextSlide, 4000);
+        }
+
+        // Calendar functionality
+        let currentDate = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        // Sample academic events
+        const academicEvents = {
+            "2024-02-20": "Mid-term Exams",
+            "2024-02-23": "Faculty Meeting",
+            "2024-02-25": "Assignment Due",
+            "2024-02-28": "Workshop"
+        };
+
+        function renderCalendar() {
+            const monthDisplay = document.getElementById('monthDisplay');
+            const calendarDays = document.getElementById('calendarDays');
+            
+            monthDisplay.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            
+            calendarDays.innerHTML = '';
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day', 'other-month');
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // Add days of the month
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day');
+                dayElement.textContent = i;
+                
+                // Check for events
+                const dateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+                if (academicEvents[dateString]) {
+                    dayElement.classList.add('event');
+                    dayElement.title = academicEvents[dateString];
+                }
+                
+                // Highlight today
+                const today = new Date();
+                if (i === today.getDate() && 
+                    currentDate.getMonth() === today.getMonth() && 
+                    currentDate.getFullYear() === today.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                
+                calendarDays.appendChild(dayElement);
+            }
+
+            // Add empty cells for days after the last day of the month
+            const lastDayIndex = lastDay.getDay();
+            const remainingDays = 6 - lastDayIndex;
+            for (let i = 0; i < remainingDays; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day', 'other-month');
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // Initialize everything when the document loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initSlider();
+            renderCalendar();
+        });
+    </script>
+</body>
+</html>

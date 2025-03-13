@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Courses | Campus Connect</title>
+    <style>
+        :root {
+            --primary-bg: #141414;
+            --sidebar-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --border-color: #2a2a2a;
+            --accent-color: #6c5ce7;
+        }
+
+        body.light-mode {
+            --primary-bg: #f5f5f7;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-color), #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+        }
+
+        .course-code {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .course-name {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .course-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Add course button */
+        .add-course-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-course-btn:hover {
+            transform: rotate(90deg);
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .course-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .course-card:nth-child(1) { animation-delay: 0.1s; }
+        .course-card:nth-child(2) { animation-delay: 0.2s; }
+        .course-card:nth-child(3) { animation-delay: 0.3s; }
+        .course-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: none;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(360deg);
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>My Courses</h1>
+        </div>
+
+        <div class="courses-grid">
+            <!-- Course cards will be populated here -->
+        </div>
+
+        <button class="add-course-btn" title="Add new course">+</button>
+    </div>
+
+    <script>
+        // Sample course data
+        const courses = [
+            {
+                code: 'CS101',
+                name: 'Introduction to Programming',
+                description: 'Fundamental concepts of programming using Python',
+                students: 45,
+                assignments: 8,
+                status: 'Active',
+                schedule: 'Mon, Wed 10:00 AM'
+            },
+            {
+                code: 'CS201',
+                name: 'Data Structures',
+                description: 'Advanced data structures and algorithms',
+                students: 38,
+                assignments: 6,
+                status: 'Active',
+                schedule: 'Tue, Thu 2:00 PM'
+            },
+            {
+                code: 'CS304',
+                name: 'Database Systems',
+                description: 'Introduction to database design and SQL',
+                students: 42,
+                assignments: 5,
+                status: 'Active',
+                schedule: 'Wed, Fri 11:00 AM'
+            }
+        ];
+
+        // Render courses
+        function renderCourses() {
+            const grid = document.querySelector('.courses-grid');
+            grid.innerHTML = courses.map(course => `
+                <div class="course-card">
+                    <div class="course-badge">${course.status}</div>
+                    <div class="course-code">${course.code}</div>
+                    <h3 class="course-name">${course.name}</h3>
+                    <p class="course-info">${course.description}</p>
+                    <p class="course-info">Schedule: ${course.schedule}</p>
+                    <div class="course-stats">
+                        <div class="stat">
+                            <span class="stat-icon">👥</span>
+                            <span class="stat-value">${course.students} Students</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">📝</span>
+                            <span class="stat-value">${course.assignments} Assignments</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn">Manage Course</button>
+                        <button class="action-btn secondary-btn">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            themeToggle.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCourses();
+
+            // Add course button click handler
+            document.querySelector('.add-course-btn').addEventListener('click', () => {
+                alert('Add new course functionality will be implemented here');
+            });
+        });
+    </script>
+</body>
+</html>
