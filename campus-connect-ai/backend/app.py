@@ -19,6 +19,11 @@ app = Flask(__name__,
            template_folder=os.path.join(BASE_DIR, 'frontend/templates'),
            static_folder=os.path.join(BASE_DIR, 'frontend/static'))
 
+# Load environment variables
+load_dotenv()
+
+app.secret_key = os.getenv("SECRET_KEY")
+
 # Route to add user
 @app.route("/add_user", methods=["POST"])
 def add_user_route():
@@ -41,7 +46,7 @@ def get_users():
 
 # Hugging Face API Setup
 HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
-MODEL_NAME = "tiiuae/falcon-7b-instruct"
+MODEL_NAME = os.getenv("MODEL_NAME", "llama3")
 
 HEADERS = {
     "Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}",
@@ -49,8 +54,6 @@ HEADERS = {
 }
 
 ENDPOINT = f"https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct"
-
-app.secret_key = "supersecretkey"
 
 # Security headers middleware
 @app.after_request
