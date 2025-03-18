@@ -377,6 +377,119 @@
             background-repeat: no-repeat;
             background-position: right 10px center;
         }
+        
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                transition: 0.3s;
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .credit-cards {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .restricted-card {
+                grid-column: auto;
+            }
+            
+            .profile-card {
+                margin-bottom: 20px;
+            }
+            
+            .header {
+                padding: 5px 10px;
+            }
+            
+            .portal-title {
+                font-size: 16px;
+            }
+            
+            .top-nav {
+                display: none;
+            }
+            
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 10px;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+                justify-content: space-around;
+            }
+        }
+        
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .credit-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .restricted-card {
+                grid-column: span 2;
+            }
+        }
+        
+        /* Add responsive font sizes using clamp */
+        .student-name {
+            font-size: clamp(18px, 2.5vw, 22px);
+        }
+        
+        .student-info {
+            font-size: clamp(14px, 1.5vw, 16px);
+        }
+        
+        .credit-number {
+            font-size: clamp(20px, 3vw, 28px);
+        }
+        
+        /* Make calendar responsive */
+        .calendar td, .calendar th {
+            padding: clamp(5px, 1.5vw, 10px);
+            font-size: clamp(12px, 1.5vw, 14px);
+        }
+        
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        /* Add backdrop for mobile menu */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -647,5 +760,30 @@
             </div>
         </div>
     </div>
+    
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item"><i class="nav-icon">🏠</i></a>
+        <a href="{{ url_for('lms') }}" class="nav-item"><i class="nav-icon">📚</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">🔧</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+    </div>
+    
+    <!-- Add backdrop for mobile menu -->
+    <div class="backdrop"></div>
+    
+    <script>
+        // Add mobile menu toggle functionality
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.backdrop').classList.toggle('active');
+        });
+        
+        document.querySelector('.backdrop').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.backdrop').classList.remove('active');
+        });
+    </script>
 </body>
 </html>

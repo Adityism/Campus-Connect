@@ -10,6 +10,12 @@
         
     </head>
     <body>
+        <button class="menu-toggle" id="menu-toggle" style="display: none;">
+            <img src="static/images/menu-icon.png" alt="Menu" width="24" height="24">
+        </button>
+        <button class="sidebar-toggle" id="sidebar-toggle">
+            <img src="static/images/cai_img/chevron-left.png" alt="Toggle Sidebar">
+        </button>
         <div class="chat-gpt">
             <div class="overlap-wrapper">
                 <div class="overlap">
@@ -364,6 +370,73 @@
                         window.location.href = "/logout";
                     }
                 });
+
+                // Handle menu toggle for mobile
+                $("#menu-toggle").click(function() {
+                    $(".side-menu").toggleClass("active");
+                });
+
+                // Close menu when clicking outside on mobile
+                $(document).click(function(event) {
+                    if (!$(event.target).closest('.side-menu').length && 
+                        !$(event.target).closest('#menu-toggle').length && 
+                        $('.side-menu').hasClass('active')) {
+                        $('.side-menu').removeClass('active');
+                    }
+                });
+
+                // Handle window resize
+                function handleResize() {
+                    if (window.innerWidth <= 768) {
+                        $("#menu-toggle").show();
+                    } else {
+                        $("#menu-toggle").hide();
+                        $(".side-menu").removeClass("active");
+                    }
+                }
+
+                // Initial check and listen for window resize
+                handleResize();
+                $(window).resize(handleResize);
+
+                // Sidebar toggle functionality
+                $("#sidebar-toggle").click(function() {
+                    $(".side-menu").toggleClass("collapsed");
+                    $(this).toggleClass("collapsed");
+                    // Save preference
+                    localStorage.setItem("sidebarCollapsed", $(".side-menu").hasClass("collapsed"));
+                });
+
+                // Restore sidebar state
+                if (localStorage.getItem("sidebarCollapsed") === "true") {
+                    $(".side-menu").addClass("collapsed");
+                    $("#sidebar-toggle").addClass("collapsed");
+                }
+
+                // Enhanced dark mode
+                function updateDarkMode(isDark) {
+                    if (isDark) {
+                        $("body").addClass("dark-theme");
+                        $(this).find("img").attr("src", "static/images/cai_img/moon-icon.png");
+                        localStorage.setItem("darkMode", "true");
+                    } else {
+                        $("body").removeClass("dark-theme");
+                        $(this).find("img").attr("src", "static/images/cai_img/9104141_sun_bright_brightness_light mode_icon 1.png");
+                        localStorage.setItem("darkMode", "false");
+                    }
+                }
+
+                // Theme toggle with improved handling
+                $("#theme-toggle").click(function() {
+                    darkMode = !darkMode;
+                    updateDarkMode(darkMode);
+                });
+
+                // Restore dark mode preference
+                if (localStorage.getItem("darkMode") === "true") {
+                    darkMode = true;
+                    updateDarkMode(true);
+                }
             });
         </script>
         
@@ -442,6 +515,24 @@
             #suggestion-btn:hover, #all-conversation-btn:hover, #tips-btn:hover, 
             #updates-btn:hover, #customization-btn:hover, #upgrade-btn:hover, #logout-btn:hover {
                 transform: scale(1.05);
+            }
+
+            /* Add to existing styles */
+            .menu-toggle {
+                padding: 10px;
+                background-color: rgba(0, 0, 0, 0.7);
+                border-radius: 5px;
+            }
+
+            .menu-toggle img {
+                filter: invert(1);
+            }
+
+            @media screen and (max-height: 600px) {
+                .chat-gpt .frame-4 {
+                    overflow-y: auto;
+                    max-height: 60vh;
+                }
             }
         </style>
     </body>

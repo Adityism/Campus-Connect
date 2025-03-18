@@ -683,6 +683,64 @@
             font-size: 0.85rem;
             color: var(--text-medium);
         }
+
+        @media screen and (max-width: 768px) {
+            .main-nav-container {
+                padding: 0.5rem;
+                height: auto;
+            }
+            
+            .header-center {
+                display: none;
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .search-input,
+            .filter-select {
+                width: 100%;
+            }
+            
+            .announcement-card {
+                margin: 0.5rem;
+            }
+            
+            .announcement-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+            
+            .modal-action span {
+                display: none;
+            }
+        }
+
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-light);
+            padding: 0.8rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            .main-content {
+                margin-bottom: 4rem;
+            }
+        }
     </style>
 </head>
 <body>

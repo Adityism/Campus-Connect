@@ -275,6 +275,109 @@
             cursor: pointer;
             font-size: 14px;
         }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                border-radius: 8px;
+            }
+            
+            .job-cards {
+                gap: 30px;  /* Increased gap for mobile */
+                padding: 10px;
+            }
+            
+            .job-card {
+                margin: 0;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            }
+            
+            .job-content {
+                padding: 25px;  /* Increased padding */
+            }
+            
+            .job-meta {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .job-description {
+                margin: 20px 0;
+                line-height: 1.6;
+            }
+            
+            .job-footer {
+                padding: 20px 25px;
+            }
+            
+            .view-btn {
+                position: static;
+                margin-top: 15px;
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+
+        /* Mobile navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            padding: 1rem;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+            
+            .container {
+                padding-bottom: 5rem;
+            }
+        }
+
+        /* Add navigation items */
+        .nav-item {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
@@ -800,6 +903,26 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-bookmark"></i>
+            <span>Saved</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
     </div>
 </body>
 </html>

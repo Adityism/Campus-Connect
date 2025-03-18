@@ -424,6 +424,109 @@
         .warning {
             color: #f44336;
         }
+
+        /* Add responsive styles */
+        @media screen and (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .top-nav {
+                display: none;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                transition: 0.3s;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .attendance-summary {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .attendance-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-context {
+                grid-template-columns: 1fr;
+            }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Add tablet responsive styles */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .attendance-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .attendance-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-context {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 15px;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                z-index: 999;
+            }
+            
+            .main-content {
+                margin-bottom: 70px;
+            }
+        }
+        
+        /* Add backdrop */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -688,5 +791,30 @@
             </div>
         </div>
     </div>
+    
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item"><i class="nav-icon">🏠</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">📊</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">📅</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+    </div>
+    
+    <!-- Add backdrop -->
+    <div class="backdrop"></div>
+    
+    <script>
+        // Add mobile menu toggle functionality
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.backdrop').classList.toggle('active');
+        });
+        
+        document.querySelector('.backdrop').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.backdrop').classList.remove('active');
+        });
+    </script>
 </body>
 </html>

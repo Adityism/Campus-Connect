@@ -11,6 +11,81 @@
         
         <link rel="stylesheet" href="../static/css/instaconnect.css">
         
+        <style>
+        /* Add responsive styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+            
+            main .container {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .left {
+                display: none;
+            }
+            
+            .middle {
+                grid-column: 1/4;
+            }
+            
+            .right {
+                display: none;
+            }
+            
+            .stories {
+                height: 8rem;
+            }
+            
+            .story {
+                width: 25%;
+            }
+        }
+        
+        /* Add mobile menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-white);
+            padding: 1rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .mobile-menu {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+            
+            .main-content {
+                margin-bottom: 4rem;
+            }
+        }
+        
+        /* Add backdrop */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
+        </style>
+        
     </head>
 <body>
     <nav>
@@ -806,6 +881,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Add mobile menu -->
+    <div class="mobile-menu">
+        <a href="#" class="menu-item active">
+            <i class="uil uil-home"></i>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="uil uil-compass"></i>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="uil uil-plus-square"></i>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="uil uil-heart"></i>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="uil uil-user"></i>
+        </a>
+    </div>
+
+    <!-- Add backdrop -->
+    <div class="backdrop"></div>
 
     <script src="{{ url_for('static', filename='js/instaConnect.js') }}"></script>
 </body>
