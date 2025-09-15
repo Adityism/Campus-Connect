@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Campus Connect Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-lg flex max-w-4xl mx-auto">
+        <div class="hidden md:flex md:w-1/2 p-10">
+            <img 
+                alt="Campus Connect" 
+                class="w-full h-full object-cover" 
+                src="/static/images/login-hero.jpg"
+                width="400" 
+                height="400"/>
+        </div>
+        <div class="w-full md:w-1/2 p-10">
+            <h2 class="text-2xl font-semibold mb-4">Welcome to</h2>
+            <h1 class="text-3xl font-bold text-purple-600 mb-8">Campus Connect</h1>
+            
+            <!-- Microsoft Login Button -->
+            <a href="{{ url_for('azure.login') }}" class="block w-full">
+                <button class="w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-2 mb-4 hover:bg-gray-50 transition-all">
+                    <img alt="Microsoft logo" class="w-5 h-5 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"/>
+                    Login with Microsoft
+                </button>
+            </a>
+            
+            <div class="flex items-center my-4">
+                <hr class="flex-grow border-gray-300"/>
+                <span class="px-2 text-gray-500">UPES Students Only</span>
+                <hr class="flex-grow border-gray-300"/>
+            </div>
+
+            <div class="mt-8 text-center text-gray-600">
+                <p>Please use your UPES Microsoft account to login.</p>
+                <p class="mt-2 text-sm">(@stu.upes.ac.in)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add any additional JavaScript functionality here
+        document.querySelector('a[href="{{ url_for("azure.login") }}"]').addEventListener('click', function(e) {
+            // Optional: Add loading state or transition effects
+            this.querySelector('button').textContent = 'Redirecting...';
+        });
+    </script>
+</body>
+</html>

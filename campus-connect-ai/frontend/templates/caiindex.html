@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, width=device-width">
+  <link rel="stylesheet" href="./static/css/global.css" />
+  <link rel="stylesheet" href="./static/css/index.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Academy+Engraved+LET:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ABeeZee:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Actor:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400&display=swap" />
+  <style>
+    /* Global styles - these apply to all screen sizes */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #000;
+      color: #fff;
+    }
+    
+    .campus-connect {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: #000;
+    }
+    
+    /* These styles will only apply to mobile screens */
+    @media screen and (max-width: 1024px) {
+      /* Navigation adjustments for mobile */
+      .navigation {
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      
+      .menu-container {
+        margin-top: 1.5rem !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+      }
+      
+      .social-icons {
+        margin-top: A1.5rem !important;
+        justify-content: center !important;
+      }
+      
+      /* Content adjustments for mobile */
+      .text-content {
+        margin-top: 1rem !important;
+      }
+      
+      .cai-title {
+        font-size: 3rem !important;
+      }
+      
+      .campus-connect-title {
+        font-size: 2rem !important;
+      }
+      
+      .ai-title {
+        font-size: 1.5rem !important;
+      }
+      
+      .tagline {
+        font-size: 1rem !important;
+        max-width: 90% !important;
+      }
+      
+      /* Button adjustments for mobile */
+      .cta-container {
+        margin: 1.5rem 0 !important;
+      }
+      
+      .cta-button {
+        padding: 0.8rem 2rem !important;
+        font-size: 1.1rem !important;
+        background: linear-gradient(45deg, rgba(140, 82, 255, 0.3), rgba(255, 0, 204, 0.3)) !important;
+        box-shadow: 0 0 10px rgba(140, 82, 255, 0.5) !important;
+      }
+      
+      .cta-button:active {
+        transform: scale(0.95) !important;
+      }
+      
+      @media screen and (max-width: 1024px) {
+        .illustration-container {
+          flex: 1 !important;
+          display: flex !important;
+          align-items: flex-end !important;
+          justify-content: center !important;
+          margin-bottom: 0 !important;
+          margin-top: auto !important;
+          width: 100% !important;
+          overflow: hidden !important;
+        }
+        
+        .robot-illustration {
+          width: 100% !important;
+          min-height: 300px !important;
+          object-fit: cover !important;
+          object-position: center bottom !important;
+          margin-bottom: 0 !important;
+        }
+      }
+      
+      /* Extra adjustments for very small screens */
+      @media screen and (max-width: 480px) {
+        .robot-illustration {
+          min-height: 250px !important;
+        }
+      }
+      
+      /* Height adjustments for shorter screens */
+      @media screen and (max-height: 700px) {
+        .robot-illustration {
+          min-height: 200px !important;
+        }
+      }
+  
+    
+    /* Additional adjustments for even smaller screens */
+    @media screen and (max-width: 480px) {
+      .logo-container {
+        width: 120px !important;
+      }
+      
+      .menu-container {
+        gap: 0.8rem !important;
+      }
+      
+      .menu-item {
+        font-size: 0.9rem !important;
+        padding: 0.3rem !important;
+      }
+      
+      .social-icons {
+        gap: 0.8rem !important;
+      }
+      
+      .social-icon {
+        width: 20px !important;
+        height: 20px !important;
+      }
+      
+      .cai-title {
+        font-size: 2.5rem !important;
+      }
+      
+      .campus-connect-title {
+        font-size: 1.6rem !important;
+      }
+      
+      .ai-title {
+        font-size: 1.3rem !important;
+      }
+      
+      .tagline {
+        font-size: 0.9rem !important;
+      }
+      
+      .cta-button {
+        padding: 0.7rem 1.8rem !important;
+        font-size: 1rem !important;
+      }
+    }
+    
+    /* Adjustments for shorter screens */
+    @media screen and (max-height: 700px) and (max-width: 1024px) {
+      .text-content {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      
+      .cai-title {
+        font-size: 2.2rem !important;
+        margin-bottom: 0.3rem !important;
+      }
+      
+      .campus-connect-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.3rem !important;
+      }
+      
+      .ai-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      
+      .tagline {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
+      }
+      
+      .cta-container {
+        margin: 0.8rem 0 !important;
+      }
+      
+      .cta-button {
+        padding: 0.6rem 1.5rem !important;
+        font-size: 0.9rem !important;
+      }
+    }
+
+    /* Image responsiveness */
+    @media screen and (max-width: 1024px) {
+      .illustration-container {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+      }
+      
+      .robot-illustration {
+        width: 100% !important;
+        max-height: 400px !important; /* Ensure the image doesn't stretch too much */
+        object-fit: cover !important;
+        object-position: center center !important;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .illustration-container {
+        width: 100% !important;
+      }
+      
+      .robot-illustration {
+        width: 100% !important;
+        max-height: 300px !important; /* Adjust the max-height for very small screens */
+        object-fit: cover !important;
+        object-position: center top !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="campus-connect">
+    <nav class="navigation">
+      <div class="logo-container">
+        <video class="logo" alt="Campus Connect Logo" src="static/videos/newlogo.mp4" autoplay muted loop></video>
+      </div>
+      <div class="menu-container">
+        <div class="menu-item">Home</div>
+        <div class="menu-item">Services</div>
+        <div class="menu-item">User Feedback</div>
+        <div class="menu-item">T&C</div>
+        <div class="menu-item">About us</div>
+      </div>
+      <div class="social-icons">
+        <img class="social-icon" alt="GitHub" src="static/images/mdi_github.png">
+        <img class="social-icon" alt="Discord" src="static/images/mdi_discord.png">
+        <img class="social-icon" alt="Reddit" src="static/images/mdi_reddit.png">
+        <img class="social-icon" alt="Twitter" src="static/images/mdi_twitter.png">
+      </div>
+    </nav>
+
+    <div class="content">
+      <div class="text-content">
+        <div class="cai-title">CAI</div>
+        <div class="campus-connect-title">CAMPUS CONNECT</div>
+        <div class="ai-title">ARTIFICIAL INTELLIGENCE</div>
+        <div class="tagline">Your intelligent campus companion, simplifying your campus experience!</div>
+      </div>
+
+      <div class="cta-container">
+        <button class="cta-button" onclick="window.location.href='/caichat'">Chat with CAI</button>
+      </div>
+
+      <div class="illustration-container">
+        <img class="robot-illustration" alt="AI Robot Illustration" src="static/images/robot.png">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messaging</title>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .chat-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .messages {
+      border: 1px solid #ddd;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+    }
+    .input-container {
+      display: flex;
+    }
+    #messageInput {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px;
+      margin-left: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h2>Chat</h2>
+    <div class="messages" id="messageDisplay"></div>
+    <div class="input-container">
+      <input type="text" id="messageInput" placeholder="Type your message here..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Connect to the server using Socket.IO
+    const socket = io('http://localhost:3001'); // Adjust the URL if needed
+
+    // Replace USER_ID with the logged-in user's ID
+    const currentUserId = 'USER_ID'; // Replace dynamically from your backend/session
+
+    // Replace TARGET_USER_ID with the ID of the user being messaged
+    const targetUserId = 'TARGET_USER_ID'; // Replace dynamically as needed
+
+    // Emit a message
+    function sendMessage() {
+      const message = document.getElementById('messageInput').value.trim();
+      if (!message) return;
+
+      const data = {
+        senderId: currentUserId,
+        receiverId: targetUserId,
+        message,
+      };
+      socket.emit('sendMessage', data);
+      document.getElementById('messageInput').value = '';
+    }
+
+    // Listen for incoming messages
+    socket.on('receiveMessage', (data) => {
+      const messageDisplay = document.getElementById('messageDisplay');
+      const messageElement = document.createElement('div');
+      messageElement.textContent = `${data.senderId}: ${data.message}`;
+      messageDisplay.appendChild(messageElement);
+      messageDisplay.scrollTop = messageDisplay.scrollHeight; // Auto-scroll
+    });
+  </script>
+</body>
+</html>

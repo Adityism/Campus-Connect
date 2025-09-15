@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Internships</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --purple: #6c5ce7;
+            --red: #e74c3c;
+            --green: #00b894;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .greeting span {
+            margin-left: 5px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0e68c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background-color: var(--purple);
+            color: white;
+        }
+
+        .tab:not(.active) {
+            background-color: #333;
+            color: #ddd;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .search-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            border-radius: 50px;
+            padding: 0 15px;
+            height: 50px;
+        }
+
+        .search-box i {
+            color: var(--text-secondary);
+            margin-right: 10px;
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: white;
+            height: 100%;
+            width: 100%;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .filter-btn {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            background-color: #333;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .job-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .job-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .job-card.google {
+            background-color: #673ab7;
+        }
+
+        .job-card.airbnb {
+            background-color: #e74c3c;
+        }
+
+        .job-card.spotify {
+            background-color: #f1c40f;
+        }
+
+        .job-content {
+            padding: 20px;
+        }
+
+        .job-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-right: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .job-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .company-name {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .meta-item {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .job-description {
+            font-size: 14px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .read-more {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .post-time {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .salary {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .view-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                border-radius: 8px;
+            }
+            
+            .job-cards {
+                gap: 30px;  /* Increased gap for mobile */
+                padding: 10px;
+            }
+            
+            .job-card {
+                margin: 0;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            }
+            
+            .job-content {
+                padding: 25px;  /* Increased padding */
+            }
+            
+            .job-meta {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .job-description {
+                margin: 20px 0;
+                line-height: 1.6;
+            }
+            
+            .job-footer {
+                padding: 20px 25px;
+            }
+            
+            .view-btn {
+                position: static;
+                margin-top: 15px;
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+
+        /* Mobile navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            padding: 1rem;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+            
+            .container {
+                padding-bottom: 5rem;
+            }
+        }
+
+        /* Add navigation items */
+        .nav-item {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="greeting">Hello Aditya <span>👋</span></div>
+            <div class="profile-pic">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <h1>Let's get an Internship!</h1>
+
+        <div class="tabs">
+            <div class="tab active">Discover</div>
+            <div class="tab">Saved</div>
+            <div class="tab">Applied</div>
+            <div class="tab">Closed</div>
+            <div class="tab">Discard</div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search for company or roles..." class="search-input">
+            </div>
+            <button class="filter-btn">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+        </div>
+
+        <div class="job-cards">
+            <!-- Google Card -->
+            <div class="job-card google" style="position: relative;">
+            <!-- Software Development And Testing Automation Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>L2</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Software Development And Testing Automation</h3>
+                            <div class="company-name">Login2Xplore</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Indore
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> Lump sum: ₹ 7,500
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Login2Xplore for a hands-on experience in software development and testing automation...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 7,500</div>
+                </div>
+            </div>
+
+            <!-- Food Technology Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>D</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Food Technology</h3>
+                            <div class="company-name">Digitopper</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Delhi
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 10,000-20,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Digitopper to explore the world of food technology and innovation...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 10,000-20,000</div>
+                </div>
+            </div>
+
+            <!-- PHP Development Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>F</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">PHP Development</h3>
+                            <div class="company-name">FynTune Solution Private Limited</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Thane, Navi Mumbai
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 6 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 12,000-18,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join FynTune for an exciting opportunity in PHP development...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 12,000-18,000</div>
+                </div>
+            </div>
+
+            <!-- Quality Analyst Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>F</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Quality Analyst</h3>
+                            <div class="company-name">FynTune Solution Private Limited</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Thane, Navi Mumbai, Turbhe
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 6 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 8,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join FynTune as a Quality Analyst to ensure the highest quality standards...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 8,000</div>
+                </div>
+            </div>
+
+            <!-- Mobile App Testing Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>Q</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Mobile App Testing</h3>
+                            <div class="company-name">Quantta Analytics</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Kolkata
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 4 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 10,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Quantta Analytics for a role in mobile app testing...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 10,000</div>
+                </div>
+            </div>
+
+            <!-- iOS App Development Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>P</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">iOS App Development</h3>
+                            <div class="company-name">Practice Buzz</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Chandigarh
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 4 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 20,000-40,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Practice Buzz for an exciting opportunity in iOS app development...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 20,000-40,000</div>
+                </div>
+            </div>
+
+            <!-- Google Sheets Expert Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>B</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Google Sheets Expert</h3>
+                            <div class="company-name">Best Roadways Limited</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Mumbai
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 10,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Best Roadways Limited as a Google Sheets Expert...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 10,000</div>
+                </div>
+            </div>
+
+            <!-- Internship with job offer Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>D</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Internship with job offer</h3>
+                            <div class="company-name">Deepesh Bhargava</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Bhopal
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 3,000-5,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Deepesh Bhargava for an internship with a job offer...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 3,000-5,000</div>
+                </div>
+            </div>
+
+            <!-- Pabbly Connect Workflow Specialist Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>B</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Pabbly Connect Workflow Specialist</h3>
+                            <div class="company-name">Breakout</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Work from home
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 1 Month
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 2,000 lump sum + Incentives
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Breakout as a Pabbly Connect Workflow Specialist...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 2,000</div>
+                </div>
+            </div>
+
+            <!-- Mobile App Development Card -->
+            <div class="job-card" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>C</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Mobile App Development</h3>
+                            <div class="company-name">Codemancers</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Vijayawada
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 Months
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> ₹ 20,000 /month
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Codemancers for a role in mobile app development...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted recently
+                    </div>
+                    <div class="salary">₹ 20,000</div>
+                </div>
+            </div>
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <span>G</span>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Sr. UX Designer</h3>
+                            <div class="company-name">Google</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> New York
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 3 years exp.
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> Fulltime
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        UX Designers are the synthesis of design and development. They take Google's most innovative product concepts...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted 2 days ago
+                    </div>
+                    <div class="salary">$50K/mo</div>
+                </div>
+            </div>
+
+            <!-- Airbnb Card -->
+            <div class="job-card airbnb" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <i class="fab fa-airbnb"></i>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Project Manager</h3>
+                            <div class="company-name">Airbnb</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Sydney
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 1-5 years exp.
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> Part-time
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Airbnb was born in 2007 when two Hosts welcomed three guests to their San Francisco home...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted 5 days ago
+                    </div>
+                    <div class="salary">$25K/mo</div>
+                </div>
+            </div>
+
+            <!-- Spotify Card -->
+            <div class="job-card spotify" style="position: relative;">
+                <button class="view-btn">
+                    View <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="job-content">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <i class="fab fa-spotify"></i>
+                        </div>
+                        <div>
+                            <h3 class="job-title">Graphic Designer</h3>
+                            <div class="company-name">Spotify</div>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> Remote
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-history"></i> 2+ years exp.
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i> Fulltime
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        Join Spotify's creative team to design visual elements for music campaigns, marketing materials, and user interface components...<span class="read-more">Read More</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> Posted 3 days ago
+                    </div>
+                    <div class="salary">30K/mo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-bookmark"></i>
+            <span>Saved</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+</body>
+</html>

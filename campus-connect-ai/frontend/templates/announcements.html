@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Announcements | Campus Connect</title>
+    <style>
+        :root {
+            --primary-color: #5D4E9B;
+            --secondary-color: #E31B6D;
+            --accent-color: #4285F4;
+            --bg-light: #f5f5f7;
+            --card-light: white;
+            --text-dark: #333;
+            --text-medium: #666;
+            --text-light: #888;
+            --border-light: rgba(93, 78, 155, 0.1);
+            --shadow-light: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .main-nav-container {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+            background-color: var(--card-light);
+            box-shadow: 0 2px 10px var(--shadow-light);
+            height: 70px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-center {
+            justify-self: center;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            margin-right: 2rem;
+        }
+
+        .logo img {
+            height: 100%;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(93, 78, 155, 0.1);
+        }
+
+        /* Enhanced Card Styles */
+        .announcement-card {
+            background: var(--card-light);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-light);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-light);
+            transform-origin: center;
+            cursor: pointer;
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(93, 78, 155, 0.2);
+        }
+
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .announcement-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --bg-light: #121212;
+            --card-light: #1E1E1E;
+            --text-dark: #FFFFFF;
+            --text-medium: #BBBBBB;
+            --text-light: #888888;
+            --border-light: rgba(255, 255, 255, 0.1);
+            --shadow-light: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .main-nav-container {
+            background: #1E1E1E;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .announcement-card {
+            background: #252525;
+            border-color: #333;
+        }
+
+        body.dark-mode .search-filter-bar {
+            background: #1E1E1E;
+        }
+
+        body.dark-mode .search-input,
+        body.dark-mode .filter-select {
+            background: #252525;
+            color: var(--text-dark);
+            border-color: #333;
+        }
+
+        body.dark-mode .logo img {
+            height: clamp(1.8rem, 3.5vw, 2.5rem); /* Smaller size for dark mode */
+            width: auto;
+            transition: height 0.3s ease;
+        }
+
+        /* Add animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .announcement-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        /* Announcement Cards */
+        .announcements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .priority-indicator {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .priority-medium {
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .priority-low {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .announcement-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .announcement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+        }
+
+        .category-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .announcement-body {
+            padding: 1.5rem;
+        }
+
+        .announcement-content {
+            margin-bottom: 1rem;
+            color: var(--text-medium);
+        }
+
+        .attachment-preview {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .announcement-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-light);
+        }
+
+        .action-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem;
+            background: var(--card-light);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px var(--shadow-light);
+        }
+
+        .action-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Search and Filter Bar */
+        .search-filter-bar {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .announcements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter-bar {
+                flex-direction: column;
+            }
+
+            .search-input, .filter-select {
+                width: 100%;
+            }
+        }
+
+        /* Theme Toggle Button Enhancement */
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-light);
+            transform: rotate(15deg);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-medium);
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--primary-color);
+        }
+
+        /* Enhanced Modal Styles */
+        .announcement-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .announcement-modal.active {
+            display: flex;
+        }
+
+        .announcement-modal-content {
+            background: var(--card-light);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+            padding: 0;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-light);
+            position: relative;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-light);
+        }
+
+        .attachment-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            gap: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .attachment-item:hover {
+            background: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Modal Close Button */
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--border-light);
+            transform: rotate(90deg);
+        }
+
+        .modal-close::before,
+        .modal-close::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 2px;
+            background: var(--text-medium);
+            transition: background 0.3s ease;
+        }
+
+        .modal-close::before {
+            transform: rotate(45deg);
+        }
+
+        .modal-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .modal-close:hover::before,
+        .modal-close:hover::after {
+            background: var(--secondary-color);
+        }
+
+        /* Enhanced Modal Action Buttons */
+        .modal-footer .action-buttons {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .modal-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal-action span {
+            font-size: 0.85rem;
+            color: var(--text-medium);
+        }
+
+        .modal-action .action-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Active nav link highlight */
+        .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: rgba(93, 78, 155, 0.1);
+        }
+
+        /* Enhanced Card Layout */
+        .announcement-card {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+        }
+
+        .priority-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            z-index: 1;
+        }
+
+        /* Enhanced Modal Close Button */
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close::before,
+        .modal-close::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 2px;
+            background: var(--text-medium);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .modal-close::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        .modal-close:hover {
+            background: rgba(227, 27, 109, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-close:hover::before,
+        .modal-close:hover::after {
+            background: var(--secondary-color);
+        }
+
+        /* Modal Action Buttons */
+        .modal-footer .action-buttons {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .modal-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-action button {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-action span {
+            font-size: 0.85rem;
+            color: var(--text-medium);
+        }
+
+        @media screen and (max-width: 768px) {
+            .main-nav-container {
+                padding: 0.5rem;
+                height: auto;
+            }
+            
+            .header-center {
+                display: none;
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .search-input,
+            .filter-select {
+                width: 100%;
+            }
+            
+            .announcement-card {
+                margin: 0.5rem;
+            }
+            
+            .announcement-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+            
+            .modal-action span {
+                display: none;
+            }
+        }
+
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-light);
+            padding: 0.8rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            .main-content {
+                margin-bottom: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Updated Header -->
+    <div class="main-nav-container">
+        <div class="header-left">
+            <div class="logo">
+                <img src="/static/images/upeslogo.png" alt="UPES Logo" data-light-src="/static/images/upeslogo.png" data-dark-src="/static/images/upeslogobnw.png">
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <a href="/studentserv" class="nav-link">Student Services</a>
+            <a href="/instaConnect" class="nav-link">Insta-connect</a>
+            <a href="/announcements" class="nav-link active">Announcements</a>
+            <a href="/internship" class="nav-link">Internships</a>
+            <a href="/caichat" class="nav-link">CAI</a>
+            <a href="/faculty" class="nav-link">Faculty</a>
+            <a href="/profile" class="nav-link">Profile</a>
+        </div>
+        
+        <div class="header-right">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌓</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Search and Filter Bar -->
+        <div class="search-filter-bar">
+            <input type="search" class="search-input" placeholder="Search announcements...">
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="academic">Academic</option>
+                <option value="administrative">Administrative</option>
+                <option value="events">Events</option>
+                <option value="email">Email Announcements</option>
+            </select>
+            <select class="filter-select" id="priorityFilter">
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
+            <select class="filter-select" id="dateFilter">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+        </div>
+
+        <!-- Announcements Grid -->
+        <div class="announcements-grid" id="announcementsGrid">
+            <!-- Announcements will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Add Modals -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Share Announcement</h2>
+            <!-- Share options here -->
+        </div>
+    </div>
+
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Announcement Details</h2>
+            <!-- Details content here -->
+        </div>
+    </div>
+
+    <!-- Add this new modal template -->
+    <div class="announcement-modal" id="announcementModal">
+        <div class="announcement-modal-content">
+            <div class="modal-header">
+                <button class="modal-close">&times;</button>
+                <div class="priority-indicator"></div>
+                <h2 class="announcement-title"></h2>
+                <div class="announcement-meta">
+                    <span class="category-tag"></span>
+                    <span class="date"></span>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <div class="announcement-content"></div>
+                
+                <div class="attachment-section">
+                    <h3>Attachments</h3>
+                    <div class="attachment-list">
+                        <!-- Attachments will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="action-buttons">
+                    <div class="modal-action">
+                        <button class="action-btn" data-tooltip="Mark as Read">✓</button>
+                        <span>Mark as Read</span>
+                    </div>
+                    <div class="modal-action">
+                        <button class="action-btn" data-tooltip="Bookmark">🔖</button>
+                        <span>Bookmark</span>
+                    </div>
+                    <div class="modal-action">
+                        <button class="action-btn" data-tooltip="Share">↗️</button>
+                        <span>Share</span>
+                    </div>
+                    <div class="modal-action">
+                        <button class="action-btn" data-tooltip="Download">📥</button>
+                        <span>Download</span>
+                    </div>
+                </div>
+                <span class="author"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample announcement data
+        const announcements = [
+            {
+                id: 1,
+                title: "Final Exam Schedule Released",
+                content: "The final examination schedule for Spring 2024 has been released. Please check your student portal for details.",
+                category: "academic",
+                priority: "high",
+                date: "2024-03-15",
+                attachments: ["schedule.pdf"],
+                author: "Academic Office"
+            },
+            {
+                id: 2,
+                title: "Campus Fest 2024 Registration Open",
+                content: "Register now for the biggest cultural event of the year. Early bird registrations get special discounts.",
+                category: "events",
+                priority: "medium",
+                date: "2024-03-14",
+                attachments: ["registration_form.pdf", "event_schedule.pdf"],
+                author: "Cultural Committee"
+            },
+            {
+                id: 3,
+                title: "Library Timings Extended",
+                content: "Library will remain open till 11 PM during exam preparation week.",
+                category: "administrative",
+                priority: "low",
+                date: "2024-03-13",
+                attachments: [],
+                author: "Library Department"
+            },
+            {
+                id: 4,
+                title: "Microsoft Recruitment Drive",
+                content: "Microsoft is conducting an online recruitment drive for 2024 batch students.",
+                category: "placement",
+                priority: "high",
+                date: "2024-03-12",
+                attachments: ["job_description.pdf"],
+                author: "Placement Cell"
+            },
+            {
+                id: 5,
+                title: "Fee Payment Reminder",
+                content: "Last date for semester fee payment is March 31, 2024. Late fee will be applicable after the deadline.",
+                category: "administrative",
+                priority: "high",
+                date: "2024-03-11",
+                attachments: ["fee_structure.pdf"],
+                author: "Finance Department"
+            },
+            {
+                id: 6,
+                title: "Sports Day Schedule",
+                content: "Annual Sports Day will be held on March 25, 2024. Check the schedule for your events.",
+                category: "events",
+                priority: "medium",
+                date: "2024-03-10",
+                attachments: ["sports_schedule.pdf"],
+                author: "Sports Committee"
+            },
+            {
+                id: 7,
+                title: "Research Paper Submission",
+                content: "Submit your research papers for the International Conference by March 20, 2024.",
+                category: "academic",
+                priority: "medium",
+                date: "2024-03-09",
+                attachments: ["submission_guidelines.pdf"],
+                author: "Research Department"
+            },
+            {
+                id: 8,
+                title: "Holiday Notice",
+                content: "University will remain closed on March 18, 2024 due to local elections.",
+                category: "administrative",
+                priority: "low",
+                date: "2024-03-08",
+                attachments: [],
+                author: "Administrative Office"
+            },
+            {
+                id: 9,
+                title: "Workshop on AI/ML",
+                content: "Two-day workshop on Artificial Intelligence and Machine Learning basics.",
+                category: "academic",
+                priority: "medium",
+                date: "2024-03-07",
+                attachments: ["workshop_details.pdf"],
+                author: "Computer Science Department"
+            },
+            {
+                id: 10,
+                title: "Campus Maintenance Notice",
+                content: "Maintenance work in Block A will be carried out on Sunday. Please plan accordingly.",
+                category: "administrative",
+                priority: "low",
+                date: "2024-03-06",
+                attachments: ["maintenance_schedule.pdf"],
+                author: "Maintenance Department"
+            }
+        ];
+
+        // Function to create announcement cards
+        function createAnnouncementCard(announcement) {
+            const card = document.createElement('div');
+            card.className = 'announcement-card';
+            card.style.animationDelay = `${Math.random() * 0.5}s`;
+
+            // Add click handler to show modal
+            card.addEventListener('click', () => showAnnouncementModal(announcement));
+
+            card.innerHTML = `
+                <div class="priority-indicator priority-${announcement.priority}">
+                    ${announcement.priority.charAt(0).toUpperCase() + announcement.priority.slice(1)} Priority
+                </div>
+                <div class="announcement-header">
+                    <h3 class="announcement-title">${announcement.title}</h3>
+                    <div class="announcement-meta">
+                        <span class="category-tag">${announcement.category}</span>
+                        <span>${new Date(announcement.date).toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <div class="announcement-body">
+                    <div class="announcement-content">${announcement.content}</div>
+                    ${announcement.attachments?.length ? `
+                        <div class="attachment-preview">
+                            📎 ${announcement.attachments.length} attachment${announcement.attachments.length > 1 ? 's' : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('announcementsGrid');
+            announcements.forEach(announcement => {
+                grid.appendChild(createAnnouncementCard(announcement));
+            });
+
+            // Add filter functionality
+            const filters = document.querySelectorAll('.filter-select');
+            filters.forEach(filter => {
+                filter.addEventListener('change', updateAnnouncements);
+            });
+
+            // Add search functionality
+            document.querySelector('.search-input').addEventListener('input', updateAnnouncements);
+
+            // Add intersection observer for animation
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.announcement-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+
+        // Function to update announcements based on filters and search
+        function updateAnnouncements() {
+            const category = document.getElementById('categoryFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+
+            const filteredAnnouncements = announcements.filter(announcement => {
+                const matchesCategory = !category || announcement.category === category;
+                const matchesPriority = !priority || announcement.priority === priority;
+                const matchesSearch = announcement.title.toLowerCase().includes(searchTerm) ||
+                                    announcement.content.toLowerCase().includes(searchTerm);
+
+                return matchesCategory && matchesPriority && matchesSearch;
+            });
+
+            const grid = document.getElementById('announcementsGrid');
+            grid.innerHTML = '';
+            filteredAnnouncements.forEach(announcement => {
+                grid.appendChild(createAnnouncementCard(announcement));
+            });
+        }
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const logoImage = document.querySelector('.logo img');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Apply saved theme
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+            logoImage.src = logoImage.dataset.darkSrc;
+        } else {
+            logoImage.src = logoImage.dataset.lightSrc;
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌓';
+            logoImage.src = isDark ? logoImage.dataset.darkSrc : logoImage.dataset.lightSrc;
+        });
+
+        // Add modal handling functions
+        function handleMarkRead(event, id) {
+            event.stopPropagation();
+            const btn = event.currentTarget;
+            btn.textContent = '✅';
+            btn.closest('.announcement-card').style.opacity = '0.7';
+            // Add API call to mark as read
+        }
+
+        function handleBookmark(event, id) {
+            event.stopPropagation();
+            const btn = event.currentTarget;
+            btn.textContent = btn.textContent === '🔖' ? '📑' : '🔖';
+            // Add API call to toggle bookmark
+        }
+
+        function handleShare(event, id) {
+            event.stopPropagation();
+            const modal = document.getElementById('shareModal');
+            modal.classList.add('active');
+            // Populate share options
+        }
+
+        function showDetails(event, id) {
+            event.stopPropagation();
+            const modal = document.getElementById('detailsModal');
+            modal.classList.add('active');
+            // Populate announcement details
+        }
+
+        // Add modal functionality
+        function showAnnouncementModal(announcement) {
+            const modal = document.getElementById('announcementModal');
+            
+            // Update modal content
+            modal.querySelector('.announcement-title').textContent = announcement.title;
+            modal.querySelector('.category-tag').textContent = announcement.category;
+            modal.querySelector('.date').textContent = new Date(announcement.date).toLocaleDateString();
+            modal.querySelector('.announcement-content').textContent = announcement.content;
+            modal.querySelector('.author').textContent = `By ${announcement.author}`;
+            
+            // Update priority indicator
+            const priorityIndicator = modal.querySelector('.priority-indicator');
+            priorityIndicator.className = `priority-indicator priority-${announcement.priority}`;
+            priorityIndicator.textContent = `${announcement.priority.charAt(0).toUpperCase() + announcement.priority.slice(1)} Priority`;
+            
+            // Update attachments
+            const attachmentList = modal.querySelector('.attachment-list');
+            attachmentList.innerHTML = announcement.attachments?.map(attachment => `
+                <div class="attachment-item">
+                    <span>📎</span>
+                    <span>${attachment}</span>
+                </div>
+            `).join('') || 'No attachments';
+            
+            // Show modal
+            modal.classList.add('active');
+        }
+
+        // Close modal when clicking outside or on close button
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('announcementModal');
+            if (e.target === modal || e.target.classList.contains('modal-close')) {
+                modal.classList.remove('active');
+            }
+            e.stopPropagation();
+        });
+
+        // Stop event propagation for modal content
+        document.querySelector('.announcement-modal-content').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Close modals with close button
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.innerHTML = '<span></span>';  // Clear innerHTML for CSS close button
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const modal = btn.closest('.modal, .announcement-modal');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Enhanced modal functionality
+        function showAnnouncementModal(announcement) {
+            const modal = document.getElementById('announcementModal');
+            
+            // Update modal content with animation
+            Object.entries({
+                '.announcement-title': announcement.title,
+                '.category-tag': announcement.category,
+                '.date': new Date(announcement.date).toLocaleDateString(),
+                '.announcement-content': announcement.content,
+                '.author': `By ${announcement.author}`
+            }).forEach(([selector, content]) => {
+                const element = modal.querySelector(selector);
+                element.style.opacity = '0';
+                element.textContent = content;
+                setTimeout(() => element.style.opacity = '1', 50);
+            });
+            
+            // Update priority indicator
+            const priorityIndicator = modal.querySelector('.priority-indicator');
+            priorityIndicator.className = `priority-indicator priority-${announcement.priority}`;
+            priorityIndicator.textContent = `${announcement.priority.charAt(0).toUpperCase() + announcement.priority.slice(1)} Priority`;
+            
+            // Update attachments with animation
+            const attachmentList = modal.querySelector('.attachment-list');
+            if (announcement.attachments?.length) {
+                attachmentList.innerHTML = announcement.attachments.map((attachment, index) => `
+                    <div class="attachment-item" style="animation-delay: ${index * 0.1}s">
+                        <span>📎</span>
+                        <span>${attachment}</span>
+                    </div>
+                `).join('');
+            } else {
+                attachmentList.innerHTML = '<div class="no-attachments">No attachments available</div>';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // Enhanced button handlers
+        function handleDownload(event) {
+            event.stopPropagation();
+            // Add download logic here
+            const btn = event.currentTarget;
+            btn.innerHTML = '✅';
+            setTimeout(() => btn.innerHTML = '📥', 1000);
+        }
+    </script>
+</body>
+</html>

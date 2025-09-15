@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPES Student Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .portal-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .top-nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item {
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-icon {
+            margin-right: 5px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #4a6baf 0%, #5d9dd1 100%);
+            color: white;
+            height: calc(100vh - 60px);
+            float: left;
+        }
+        
+        .sidebar-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item i {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .profile-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .student-name {
+            color: #4a6baf;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .student-info {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        .credit-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .restricted-card {
+            grid-column: 4;
+        }
+        
+        .credit-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .credit-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .credit-label {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .meter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .blue-meter {
+            color: #4a6baf;
+        }
+        
+        .orange-meter {
+            color: #ff9800;
+        }
+        
+        .pink-meter {
+            color: #e91e63;
+        }
+        
+        .green-meter {
+            color: #4CAF50;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #777;
+        }
+        
+        .card-section {
+            background-color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .refresh-icon {
+            color: #777;
+            cursor: pointer;
+        }
+        
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background-color: #4a6baf;
+            color: white;
+        }
+        
+        .card-content {
+            padding: 20px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #777;
+        }
+        
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .calendar th {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .calendar td {
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .calendar td.today {
+            background-color: #4a6baf;
+            color: white;
+            border-radius: 50%;
+        }
+        
+        .calendar td.highlight {
+            color: #e91e63;
+            font-weight: bold;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-nav {
+            cursor: pointer;
+        }
+        
+        .calendar-month {
+            font-weight: 500;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .color-box {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+        }
+        
+        .blue-box {
+            background-color: #4a6baf;
+        }
+        
+        .yellow-box {
+            background-color: #ffc107;
+        }
+        
+        .pink-box {
+            background-color: #e91e63;
+        }
+        
+        .payment-section {
+            margin-top: 20px;
+        }
+        
+        .payment-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .payment-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .payment-tab.active {
+            background-color: #4a6baf;
+            color: white;
+        }
+        
+        .learning-section {
+            margin-bottom: 20px;
+        }
+        
+        .course-dropdown {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            appearance: none;
+            background-color: white;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                transition: 0.3s;
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .credit-cards {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .restricted-card {
+                grid-column: auto;
+            }
+            
+            .profile-card {
+                margin-bottom: 20px;
+            }
+            
+            .header {
+                padding: 5px 10px;
+            }
+            
+            .portal-title {
+                font-size: 16px;
+            }
+            
+            .top-nav {
+                display: none;
+            }
+            
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 10px;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+                justify-content: space-around;
+            }
+        }
+        
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .credit-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .restricted-card {
+                grid-column: span 2;
+            }
+        }
+        
+        /* Add responsive font sizes using clamp */
+        .student-name {
+            font-size: clamp(18px, 2.5vw, 22px);
+        }
+        
+        .student-info {
+            font-size: clamp(14px, 1.5vw, 16px);
+        }
+        
+        .credit-number {
+            font-size: clamp(20px, 3vw, 28px);
+        }
+        
+        /* Make calendar responsive */
+        .calendar td, .calendar th {
+            padding: clamp(5px, 1.5vw, 10px);
+            font-size: clamp(12px, 1.5vw, 14px);
+        }
+        
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        /* Add backdrop for mobile menu */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <div class="menu-icon">☰</div>
+            <img src="static/images/upeslogo.png" alt="UPES Logo" class="logo" style="height: 40px;">
+            <span class="portal-title">| Student Portal</span>
+        </div>
+        <div class="top-nav">
+            <a href="{{ url_for('lms') }}" class="nav-item"><i class="nav-icon">📚</i> LMS</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🔧</i> Service Request</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🏛️</i> Library</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🎓</i> Alumni</a>
+            <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+            <a href="#" class="nav-item"><i class="nav-icon">🔔</i><sup>1</sup></a>
+            <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+        </div>
+    </div>
+    
+    <div class="sidebar">
+        <div class="sidebar-item">
+            <i>📅</i> Holiday and Events
+        </div>
+        <div class="sidebar-item">
+            <i>👤</i> Student Profile
+        </div>
+        <div class="sidebar-item">
+            <i>🔧</i> Service Request Creation
+        </div>
+        <div class="sidebar-item">
+            <i>📋</i> Time Table
+        </div>
+        <div class="sidebar-item">
+            <i>📨</i> Received Circulars
+        </div>
+        <div class="sidebar-item">
+            <i>✓</i> Course Selection
+        </div>
+        <div class="sidebar-item">
+            <i>🎫</i> Hall Ticket
+        </div>
+        <div class="sidebar-item">
+            <i>📄</i> Transcript
+        </div>
+        <div class="sidebar-item">
+            <i>💬</i> My Feedback
+        </div>
+        <div class="sidebar-item">
+            <a href="/lms" class="nav-item"><i>📊</i> LMS</a>
+        </div>
+        <div class="sidebar-item">
+            <i>🏠</i> Hostel Management
+        </div>
+        <div class="sidebar-item">
+            <a href="/attendance" class="nav-item"><i>📊</i> Student Attendance</a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="content-grid">
+            <div class="profile-card">
+                <div class="profile-image">
+                    <img src="static/images/male.png" alt="UPES Logo" class="logo" ;">
+                </div>
+                <h2 class="student-name">ADITYA GOYAL</h2>
+                <p class="student-info">Student ID: 500107195</p>
+                <p class="student-info">Status: <span class="status-badge">ACTIVE</span></p>
+                <p class="student-info">Bachelor of Technology (Computer Science)</p>
+                <p class="student-info">Semester 6</p>
+                
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <span class="calendar-nav">◀</span>
+                        <span class="calendar-month">March 2025</span>
+                        <span class="calendar-nav">▶</span>
+                    </div>
+                    <div class="calendar-today">Today</div>
+                    <table class="calendar">
+                        <thead>
+                            <tr>
+                                <th>MO</th>
+                                <th>TU</th>
+                                <th>WE</th>
+                                <th>TH</th>
+                                <th>FR</th>
+                                <th>SA</th>
+                                <th>SU</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>24</td>
+                                <td>25</td>
+                                <td class="highlight">26</td>
+                                <td>27</td>
+                                <td>28</td>
+                                <td>1</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="today">3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <td>13</td>
+                                <td class="highlight">14</td>
+                                <td>15</td>
+                                <td>16</td>
+                            </tr>
+                            <tr>
+                                <td>17</td>
+                                <td>18</td>
+                                <td>19</td>
+                                <td>20</td>
+                                <td>21</td>
+                                <td>22</td>
+                                <td>23</td>
+                            </tr>
+                            <tr>
+                                <td>24</td>
+                                <td>25</td>
+                                <td>26</td>
+                                <td>27</td>
+                                <td>28</td>
+                                <td>29</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td>31</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box blue-box"></div>
+                            <span>Class Room</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box yellow-box"></div>
+                            <span>Hybrid Class Room</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box pink-box"></div>
+                            <span>Virtual Class Room</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-section">
+                <div class="credit-cards">
+                    <div class="credit-card">
+                        <div class="meter blue-meter">🔵</div>
+                        <div class="credit-number">100</div>
+                        <div class="credit-label">Credits Required</div>
+                    </div>
+                    <div class="credit-card">
+                        <div class="meter orange-meter">🟠</div>
+                        <div class="credit-number">0</div>
+                        <div class="credit-label">Credits Earned</div>
+                    </div>
+                    <div class="credit-card">
+                        <div class="meter pink-meter">🔴</div>
+                        <div class="credit-number">0</div>
+                        <div class="credit-label">Credits Remaining</div>
+                    </div>
+                    <div class="credit-card restricted-card">
+                        <div class="lock-icon">🔒</div>
+                        <div class="credit-number">Restricted</div>
+                        <div class="credit-label">Attendance Summary</div>
+                    </div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="card-header">
+                        <div class="card-title">Sessions & Circular/Notice</div>
+                    </div>
+                    <div class="tab-header">
+                        <div class="tab active">Today's Sessions</div>
+                        <div class="tab">Circular/Notice</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon">📋</div>
+                        <p>No data to display!</p>
+                    </div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="card-header">
+                        <div class="card-title">Attendance Summary</div>
+                        <div class="refresh-icon">🔄</div>
+                    </div>
+                    <div class="tab-header">
+                        <div class="tab active">This Week</div>
+                        <div class="tab">This Term</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon">📊</div>
+                        <p>No attendance data found.</p>
+                        
+                        <div class="legend" style="margin-top: 40px;">
+                            <div class="legend-item">
+                                <div style="width:15px; height:15px; background-color:#4a6baf; margin-right:5px;"></div>
+                                <span>Ok</span>
+                            </div>
+                            <div class="legend-item">
+                                <div style="width:15px; height:15px; background-color:#ffc107; margin-right:5px;"></div>
+                                <span>Need Attention</span>
+                            </div>
+                            <div class="legend-item">
+                                <div style="width:15px; height:15px; background-color:#f44336; margin-right:5px;"></div>
+                                <span>Critical</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <a href="#" style="color: #4a6baf; text-decoration: none;">View Student Attendance ➝</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px;">
+                    <div class="learning-section card-section">
+                        <div class="card-header">
+                            <div class="card-title">Learning Hours</div>
+                            <div class="refresh-icon">🔄</div>
+                        </div>
+                        <div class="card-content" style="align-items: flex-start;">
+                            <p style="align-self: flex-start; margin-bottom: 10px;">Course</p>
+                            <select class="course-dropdown">
+                                <option>Big Data Analytics (...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-section card-section">
+                        <div class="card-header">
+                            <div class="card-title">Payment Details</div>
+                        </div>
+                        <div class="payment-tabs">
+                            <div class="payment-tab">Fee Cart</div>
+                            <div class="payment-tab">Scholarship</div>
+                            <div class="payment-tab active">Due Payment(s)</div>
+                            <div class="payment-tab">Payment History</div>
+                            <div class="payment-tab">Fee Certificate</div>
+                            <div class="payment-tab">Fee Invoice</div>
+                        </div>
+                        <div class="card-content" style="align-items: flex-start; text-align: left;">
+                            <p>Net Payable : ₹900.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item"><i class="nav-icon">🏠</i></a>
+        <a href="{{ url_for('lms') }}" class="nav-item"><i class="nav-icon">📚</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">🔧</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+    </div>
+    
+    <!-- Add backdrop for mobile menu -->
+    <div class="backdrop"></div>
+    
+    <script>
+        // Add mobile menu toggle functionality
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.backdrop').classList.toggle('active');
+        });
+        
+        document.querySelector('.backdrop').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.backdrop').classList.remove('active');
+        });
+    </script>
+</body>
+</html>

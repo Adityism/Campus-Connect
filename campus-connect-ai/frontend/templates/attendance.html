@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPES Student Attendance Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .portal-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .top-nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item {
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-icon {
+            margin-right: 5px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #4a6baf 0%, #5d9dd1 100%);
+            color: white;
+            height: calc(100vh - 60px);
+            float: left;
+        }
+        
+        .sidebar-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item i {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .card-section {
+            background-color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .search-context {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .select-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .search-button {
+            background-color: #4a6baf;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-button i {
+            margin-right: 5px;
+        }
+        
+        .search-button:hover {
+            background-color: #3c589a;
+        }
+        
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .summary-title {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .summary-percentage {
+            color: #4a6baf;
+        }
+        
+        .summary-danger {
+            color: #e91e63;
+        }
+        
+        .attendance-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        
+        .chart-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        
+        .attendance-table {
+            margin-top: 20px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background-color: #f5f5f5;
+            padding: 10px 15px;
+            text-align: left;
+            font-weight: 500;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-present {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .status-absent {
+            background-color: #ffebee;
+            color: #f44336;
+        }
+        
+        .status-late {
+            background-color: #fff8e1;
+            color: #ffc107;
+        }
+        
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4caf50 0% 75%,
+                #f44336 75% 90%,
+                #ffc107 90% 100%
+            );
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .pie-chart::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .pie-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        
+        .color-present {
+            background-color: #4caf50;
+        }
+        
+        .color-absent {
+            background-color: #f44336;
+        }
+        
+        .color-late {
+            background-color: #ffc107;
+        }
+        
+        .bar-chart {
+            display: flex;
+            height: 200px;
+            align-items: flex-end;
+            margin: 0 auto;
+            width: 80%;
+            justify-content: space-between;
+        }
+        
+        .bar {
+            width: 40px;
+            background-color: #4a6baf;
+            border-radius: 3px 3px 0 0;
+            position: relative;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 500;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #777;
+        }
+        
+        .attendance-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .item-subject {
+            font-weight: 500;
+        }
+        
+        .item-percentage {
+            font-weight: 500;
+        }
+        
+        .warning {
+            color: #f44336;
+        }
+
+        /* Add responsive styles */
+        @media screen and (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .top-nav {
+                display: none;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                transition: 0.3s;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .attendance-summary {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .attendance-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-context {
+                grid-template-columns: 1fr;
+            }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Add tablet responsive styles */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .attendance-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .attendance-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-context {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Add mobile navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 15px;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                z-index: 999;
+            }
+            
+            .main-content {
+                margin-bottom: 70px;
+            }
+        }
+        
+        /* Add backdrop */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <div class="menu-icon">☰</div>
+            <img src="static/images/upeslogo.png" alt="UPES Logo" class="logo" style="height: 40px;">
+            <span class="portal-title">| Student Portal</span>
+        </div>
+        <div class="top-nav">
+            <a href="#" class="nav-item"><i class="nav-icon">📚</i> LMS</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🔧</i> Service Request</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🏛️</i> Library</a>
+            <a href="#" class="nav-item"><i class="nav-icon">🎓</i> Alumni</a>
+            <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+            <a href="#" class="nav-item"><i class="nav-icon">🔔</i><sup>1</sup></a>
+            <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+        </div>
+    </div>
+    
+    <div class="sidebar">
+        <div class="sidebar-item">
+            <i>📅</i> Holiday and Events
+        </div>
+        <div class="sidebar-item">
+            <i>👤</i> Student Profile
+        </div>
+        <div class="sidebar-item">
+            <i>🔧</i> Service Request Creation
+        </div>
+        <div class="sidebar-item">
+            <i>📋</i> Time Table
+        </div>
+        <div class="sidebar-item">
+            <i>📨</i> Received Circulars
+        </div>
+        <div class="sidebar-item">
+            <i>✓</i> Course Selection
+        </div>
+        <div class="sidebar-item">
+            <i>🎫</i> Hall Ticket
+        </div>
+        <div class="sidebar-item">
+            <i>📄</i> Transcript
+        </div>
+        <div class="sidebar-item">
+            <i>💬</i> My Feedback
+        </div>
+        <div class="sidebar-item">
+            <i>📚</i> LMS
+        </div>
+        <div class="sidebar-item">
+            <i>🏠</i> Hostel Management
+        </div>
+        <div class="sidebar-item active">
+            <i>📊</i> Student Attendance
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1 class="page-title">Student Attendance</h1>
+        
+        <div class="card-section">
+            <div class="card-header">
+                <div class="card-title">Search Context: Student Attendance</div>
+            </div>
+            <div class="card-content">
+                <div class="search-context">
+                    <div class="input-group">
+                        <label class="input-label">Program</label>
+                        <input type="text" class="input-field" value="Bachelor of Technology (Computer Science and Engineering) In Data Science" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Term</label>
+                        <input type="text" class="input-field" value="Semester 6" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Course</label>
+                        <select class="select-field">
+                            <option>All Courses</option>
+                            <option>Big Data Analytics</option>
+                            <option>Machine Learning</option>
+                            <option>Deep Learning</option>
+                            <option>Data Visualization</option>
+                            <option>Cloud Computing</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Student ID</label>
+                        <input type="text" class="input-field" value="500107195" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Start Date</label>
+                        <input type="date" class="input-field" value="2025-01-02">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">End Date</label>
+                        <input type="date" class="input-field" value="2025-03-03">
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="search-button"><i>🔍</i> Search</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="attendance-summary">
+            <div class="summary-card">
+                <div class="summary-title">Total Classes</div>
+                <div class="summary-value">42</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-title">Classes Attended</div>
+                <div class="summary-value">35</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-title">Classes Missed</div>
+                <div class="summary-value">7</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-title">Attendance Percentage</div>
+                <div class="summary-value summary-percentage">83.3%</div>
+            </div>
+        </div>
+        
+        <div class="attendance-charts">
+            <div class="chart-card">
+                <h3 class="chart-title">Attendance Distribution</h3>
+                <div class="chart-container">
+                    <div class="pie-chart"></div>
+                </div>
+                <div class="pie-legend">
+                    <div class="legend-item">
+                        <div class="legend-color color-present"></div>
+                        <span>Present (83.3%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-absent"></div>
+                        <span>Absent (11.9%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-late"></div>
+                        <span>Late (4.8%)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">Monthly Attendance Trend</h3>
+                <div class="chart-container">
+                    <div class="bar-chart">
+                        <div class="bar" style="height: 88%;">
+                            <div class="bar-value">88%</div>
+                            <div class="bar-label">Jan</div>
+                        </div>
+                        <div class="bar" style="height: 92%;">
+                            <div class="bar-value">92%</div>
+                            <div class="bar-label">Feb</div>
+                        </div>
+                        <div class="bar" style="height: 70%;">
+                            <div class="bar-value">70%</div>
+                            <div class="bar-label">Mar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-section">
+            <div class="card-header">
+                <div class="card-title">Course-wise Attendance</div>
+            </div>
+            <div class="card-content">
+                <ul class="attendance-list">
+                    <li class="attendance-item">
+                        <span class="item-subject">Big Data Analytics</span>
+                        <span class="item-percentage">90%</span>
+                    </li>
+                    <li class="attendance-item">
+                        <span class="item-subject">Machine Learning</span>
+                        <span class="item-percentage">85%</span>
+                    </li>
+                    <li class="attendance-item">
+                        <span class="item-subject">Deep Learning</span>
+                        <span class="item-percentage">88%</span>
+                    </li>
+                    <li class="attendance-item">
+                        <span class="item-subject">Data Visualization</span>
+                        <span class="item-percentage warning">72%</span>
+                    </li>
+                    <li class="attendance-item">
+                        <span class="item-subject">Cloud Computing</span>
+                        <span class="item-percentage">82%</span>
+                    </li>
+                </ul>
+                <p style="margin-top: 15px; color: #f44336; font-size: 14px;">
+                    <b>Note:</b> Minimum 75% attendance is required to be eligible for end-term examinations.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card-section attendance-table">
+            <div class="card-header">
+                <div class="card-title">Recent Attendance Records</div>
+            </div>
+            <div class="card-content">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Faculty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mar 03, 2025</td>
+                            <td>Big Data Analytics</td>
+                            <td>10:00 - 11:30 AM</td>
+                            <td><span class="status-badge status-present">Present</span></td>
+                            <td>Dr. Rajesh Kumar</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 03, 2025</td>
+                            <td>Deep Learning</td>
+                            <td>1:00 - 2:30 PM</td>
+                            <td><span class="status-badge status-present">Present</span></td>
+                            <td>Dr. Anjali Sharma</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 02, 2025</td>
+                            <td>Machine Learning</td>
+                            <td>9:00 - 10:30 AM</td>
+                            <td><span class="status-badge status-absent">Absent</span></td>
+                            <td>Dr. Prakash Verma</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 02, 2025</td>
+                            <td>Data Visualization</td>
+                            <td>2:30 - 4:00 PM</td>
+                            <td><span class="status-badge status-present">Present</span></td>
+                            <td>Prof. Neha Gupta</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 01, 2025</td>
+                            <td>Cloud Computing</td>
+                            <td>11:30 AM - 1:00 PM</td>
+                            <td><span class="status-badge status-late">Late</span></td>
+                            <td>Dr. Amit Singh</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 28, 2025</td>
+                            <td>Big Data Analytics</td>
+                            <td>10:00 - 11:30 AM</td>
+                            <td><span class="status-badge status-present">Present</span></td>
+                            <td>Dr. Rajesh Kumar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add mobile navigation -->
+    <div class="mobile-nav">
+        <a href="#" class="nav-item"><i class="nav-icon">🏠</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">📊</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">📅</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">👤</i></a>
+        <a href="#" class="nav-item"><i class="nav-icon">⚙️</i></a>
+    </div>
+    
+    <!-- Add backdrop -->
+    <div class="backdrop"></div>
+    
+    <script>
+        // Add mobile menu toggle functionality
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.backdrop').classList.toggle('active');
+        });
+        
+        document.querySelector('.backdrop').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.backdrop').classList.remove('active');
+        });
+    </script>
+</body>
+</html>

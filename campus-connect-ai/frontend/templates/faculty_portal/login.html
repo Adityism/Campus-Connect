@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Connect | Faculty Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/faculty_portal/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/faculty_portal/login.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form-container">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='images/campus-connect-logo.png') }}" alt="Campus Connect Logo" class="logo">
+                <h1>Campus Connect</h1>
+                <h2>Faculty Portal</h2>
+            </div>
+            
+            <div class="login-form">
+                <form onsubmit="return false;">
+                    <div id="error-message" class="error-message"></div>
+                    
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="username@upes.ac.in" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="login-button" type="submit">Login</button>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="login-footer">
+                <p>© 2024 Campus Connect. All rights reserved.</p>
+                <p><a href="/">Student Portal</a></p>
+            </div>
+        </div>
+        
+        <div class="login-info">
+            <h2>Welcome to the Faculty Portal</h2>
+            <ul>
+                <li>Respond to student ProfConnect queries</li>
+                <li>Manage attendance records</li>
+                <li>Access learning management tools</li>
+                <li>View your timetable</li>
+                <li>Send notifications to students</li>
+            </ul>
+            <div class="campus-ai-info">
+                <h3>Campus AI</h3>
+                <p>Our AI assistant can help you with administrative tasks and answer common faculty questions.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/faculty_portal/auth.js') }}"></script>
+</body>
+</html>
