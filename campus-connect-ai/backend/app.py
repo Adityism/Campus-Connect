@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, send_from_directory, redirect, url_for, session
+from flask import Flask, jsonify, request, render_template, send_from_directory, redirect, url_for, session, Response, stream_with_context
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_dance.contrib.azure import make_azure_blueprint
@@ -8,6 +8,7 @@ import json
 import os
 import requests
 import logging
+import sys
 from faculty.routes import faculty_bp
 
 # Add logging configuration
@@ -23,6 +24,27 @@ app = Flask(__name__,
 load_dotenv()
 
 app.secret_key = os.getenv("SECRET_KEY")
+
+# -----------------------------------------------------------------------------
+# TEMPORARY STUBS (replace with actual Firestore or DB integration)
+# -----------------------------------------------------------------------------
+def add_user(name, email):
+    logger.info(f"Stub add_user called: {name}, {email}")
+    return f"User {name} with {email} added (stubbed)"
+
+class FakeDB:
+    def collection(self, name):
+        logger.info(f"Stub db.collection called: {name}")
+        return []
+
+db = FakeDB()
+# -----------------------------------------------------------------------------
+
+# Redirect /caichat to Streamlit UI
+@app.route('/caichat')
+def caichat_redirect():
+    """Redirect /caichat to the Streamlit chat UI."""
+    return redirect("http://localhost:8505", code=302)
 
 # Route to add user
 @app.route("/add_user", methods=["POST"])
@@ -40,11 +62,11 @@ def add_user_route():
 # Route to get users
 @app.route("/get_users", methods=["GET"])
 def get_users():
-    users_ref = db.collection("users").stream()
-    users = [{doc.id: doc.to_dict()} for doc in users_ref]
+    users_ref = db.collection("users")
+    users = []  # stubbed empty response
     return jsonify(users)
 
-# Hugging Face API Setup
+# Hugging Face API Setup (optional if using Ollama)
 HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
 MODEL_NAME = os.getenv("MODEL_NAME", "llama3")
 
@@ -136,18 +158,10 @@ knowledge_base = load_knowledge_base()
 def root():
     return render_template("landing.html")
 
-# Remove the /login route since we're using a modal now
-# @app.route('/login')
-# def login():
-#     return render_template("login.html")
-
 @app.route('/auth/login')
 def auth_login():
-    # Get login type from query parameter
     login_type = request.args.get('type', 'student')
     session['login_type'] = login_type
-    
-    # Redirect to Microsoft login
     return redirect(url_for("azure.login"))
 
 @app.route('/auth/callback')
@@ -163,7 +177,6 @@ def auth_callback():
     email = user_data.get("mail") or user_data.get("userPrincipalName")
     login_type = session.get('login_type', 'student')
 
-    # Store user info in session
     session.permanent = True
     session["user"] = {
         "email": email,
@@ -171,13 +184,10 @@ def auth_callback():
         "type": login_type
     }
 
-    # Only validate email for student logins
     if login_type == 'student':
         if not email.endswith("@stu.upes.ac.in"):
             return "Access Denied: Please use your student email (@stu.upes.ac.in)", 403
         return redirect(url_for('home'))
-    
-    # For faculty login, set token and redirect to dashboard
     elif login_type == 'faculty':
         session['faculty_token'] = True
         return redirect(url_for('faculty_portal_dashboard'))
@@ -188,7 +198,6 @@ def auth_callback():
 def home():
     if "user" not in session:
         return redirect(url_for("login"))
-    # Check if user is student before showing index page
     if session.get("user", {}).get("type") == "faculty":
         return redirect(url_for("faculty_portal_dashboard"))
     return render_template("index.html")
@@ -200,9 +209,7 @@ def serve_static(filename):
         return send_from_directory(app.static_folder, filename)
     except Exception as e:
         app.logger.error(f"Error serving static file {filename}: {str(e)}")
-        app.logger.debug(f"Static folder contents: ['.DS_Store', 'styles.css', 'css', 'images', 'js', 'script.js', 'videos']")
         return "File not found", 404
-
 
 @app.route('/caiindex', methods=['GET'])
 def caiindex():
@@ -210,7 +217,6 @@ def caiindex():
 
 @app.route('/faculty_portal')
 def faculty_portal():
-    """Faculty portal entry point"""
     if 'faculty_token' not in session:
         return redirect(url_for('login'))
     return redirect(url_for('faculty_portal_dashboard'))
@@ -221,7 +227,6 @@ def login():
 
 @app.route('/faculty')
 def faculty():
-    """ProfConnect portal for students"""
     return render_template('faculty.html')
 
 @app.route('/internship')
@@ -240,7 +245,6 @@ def get_faqs():
 def get_announcements():
     try:
         announcements = knowledge_base.get('announcements', [])
-        logger.info(f"Fetched {len(announcements)} regular announcements")
         return jsonify(announcements)
     except Exception as e:
         logger.exception("Error fetching regular announcements")
@@ -250,50 +254,61 @@ def get_announcements():
 def announcements():
     return render_template('announcements.html')
 
-from ai_model import query_deepseek  # Changed from query_mistral
+# ---------------- AI Query Route ----------------
+from ai_model import query_deepseek, stream_deepseek_response
+@app.route('/api/query/stream', methods=['POST'])
+def query_api_stream():
+    try:
+        data = request.get_json(force=True, silent=True)
+        if not data:
+            return jsonify({'error': 'Invalid or empty JSON received'}), 400
+
+        prompt = data.get('prompt', '')
+        if not prompt:
+            return jsonify({'error': 'Prompt is required'}), 400
+
+        return Response(stream_with_context(stream_deepseek_response(prompt)), mimetype='text/event-stream')
+    except Exception as e:
+        logger.exception("Error in /api/query/stream endpoint")
+        return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 @app.route('/api/query', methods=['POST'])
 def query_api():
-    data = request.get_json()
-    prompt = data.get('prompt', '')
-    
-    if not prompt:
-        return jsonify({'error': 'Prompt is required'}), 400
-    
-    # Function name remains the same but now uses Llama 3 internally
-    response_text = query_deepseek(prompt)
-    return jsonify({'response': response_text})
+    try:
+        data = request.get_json(force=True, silent=True)
+        if not data:
+            return jsonify({'error': 'Invalid or empty JSON received'}), 400
 
-@app.route('/caichat')
-def caichat():
-    return render_template('caichat.html')
+        prompt = data.get('prompt', '')
+        if not prompt:
+            return jsonify({'error': 'Prompt is required'}), 400
+
+        response_text = query_deepseek(prompt)
+        return jsonify({'response': response_text})
+
+    except Exception as e:
+        logger.exception("Error in /api/query endpoint")
+        return jsonify({'error': f'Internal server error: {str(e)}'}), 500
+# ------------------------------------------------
 
 @app.route('/search')
 def search():
     query = request.args.get('q', '').lower()
     results = []
-    
-    # Search through all sections
     for section, items in knowledge_base.items():
         for item in items:
-            # Convert item to string for searching
             item_str = json.dumps(item).lower()
             if query in item_str:
-                # Add section type to item
                 item_with_type = item.copy()
                 item_with_type['type'] = section
                 results.append(item_with_type)
-    
     return jsonify(results)
 
 @app.route('/logout')
 def logout():
-    # Clear user session
     session.clear()
-    # Redirect to Microsoft's logout endpoint
-    # Get the logout URL from Azure AD configuration
     logout_url = (
-        f"https://login.microsoftonline.com/{app.config['AZURE_OAUTH_TENANT']}/oauth2/v2.0/logout"
+        f"https://login.microsoftonline.com/{app.config['AZURE_OAUTH_CLIENT_TENANT']}/oauth2/v2.0/logout"
         f"?post_logout_redirect_uri=https://localhost:5001"
     )
     return redirect(logout_url)
@@ -314,137 +329,7 @@ def attendance():
 def insta_connect():
     return render_template('instaConnect.html')
 
-# InstaConnect API Endpoints
-@app.route('/api/instaConnect/posts', methods=['POST'])
-def create_insta_post():
-    if not session.get("user"):
-        return jsonify({'error': 'Unauthorized'}), 401
-        
-    data = request.get_json()
-    content = data.get('content')
-    
-    if not content:
-        return jsonify({'error': 'Content is required'}), 400
-        
-    # Create post logic here
-    post = {
-        'id': str(uuid.uuid4()),
-        'content': content,
-        'author': {
-            'id': session['user'].get('id'),
-            'name': session['user'].get('displayName'),
-            'avatar': f"/static/images/{'male' if session['user'].get('gender') == 'male' else 'female'}.png"
-        },
-        'createdAt': datetime.now().isoformat()
-    }
-    
-    return jsonify({'success': True, 'post': post}), 201
-
-@app.route('/api/instaConnect/search', methods=['GET'])
-def insta_search():
-    if not session.get("user"):
-        return jsonify({'error': 'Unauthorized'}), 401
-        
-    query = request.args.get('q', '')
-    
-    if len(query) < 3:
-        return jsonify({'error': 'Query must be at least 3 characters'}), 400
-        
-    # Search logic here
-    results = {
-        'users': [],
-        'projects': []
-    }
-    
-    return jsonify(results)
-
-def get_outlook_emails():
-    """Fetch emails from Outlook using Microsoft Graph API"""
-    if not azure_bp.session.authorized:
-        return None
-        
-    # Get emails from the last 30 days
-    start_date = (datetime.now() - timedelta(days=30)).isoformat()
-    
-    # Microsoft Graph API endpoint for messages
-    endpoint = "https://graph.microsoft.com/v1.0/me/messages"
-    
-    # Query parameters to filter announcements
-    params = {
-        "$select": "subject,receivedDateTime,bodyPreview,from,importance",
-        "$filter": f"receivedDateTime ge {start_date} and (subject contains 'Announcement' or subject contains 'Notice')",
-        "$orderby": "receivedDateTime desc",
-        "$top": 50  # Limit to 50 emails
-    }
-    
-    try:
-        response = azure_bp.session.get(endpoint, params=params)
-        if response.ok:
-            return response.json().get('value', [])
-        return None
-    except Exception as e:
-        print(f"Error fetching emails: {e}")
-        return None
-
-@app.route('/api/outlook-announcements')
-def get_outlook_announcements():
-    """API endpoint to get Outlook announcements"""
-    if "user" not in session:
-        logger.warning("User not in session")
-        return jsonify({"error": "Unauthorized"}), 401
-        
-    if not azure_bp.session.authorized:
-        logger.warning("Azure session not authorized")
-        return jsonify({"error": "Not authenticated with Outlook"}), 401
-
-    try:
-        # Microsoft Graph API endpoint for messages
-        endpoint = "https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages"
-        
-        # Get emails from last 30 days
-        thirty_days_ago = (datetime.now() - timedelta(days=30)).isoformat()
-        
-        # Query parameters
-        params = {
-            "$select": "id,subject,bodyPreview,receivedDateTime,from,importance",
-            "$filter": f"receivedDateTime ge {thirty_days_ago}",
-            "$orderby": "receivedDateTime desc",
-            "$top": 50
-        }
-        
-        logger.debug(f"Making request to Graph API: {endpoint}")
-        response = azure_bp.session.get(endpoint, params=params)
-        
-        if not response.ok:
-            logger.error(f"Graph API error: {response.status_code} - {response.text}")
-            return jsonify({"error": "Failed to fetch emails"}), response.status_code
-            
-        emails = response.json().get('value', [])
-        logger.info(f"Successfully fetched {len(emails)} emails")
-        
-        announcements = [{
-            "id": email.get("id"),
-            "title": email.get("subject", "No Subject"),
-            "content": email.get("bodyPreview", ""),
-            "date": email.get("receivedDateTime"),
-            "from": email.get("from", {}).get("emailAddress", {}).get("name", "Unknown Sender"),
-            "importance": email.get("importance", "normal"),
-            "category": "Email Announcement",
-            "isEmail": True
-        } for email in emails if email.get("subject")]
-
-        return jsonify(announcements)
-        
-    except Exception as e:
-        logger.exception("Error fetching Outlook emails")
-        return jsonify({"error": str(e)}), 500
-
-@app.after_request
-def add_ngrok_header(response):
-    response.headers["ngrok-skip-browser-warning"] = "true"
-    return response
-
-# Faculty frontend routes with auth check
+# Faculty portal routes
 @app.route('/faculty_portal/dashboard')
 def faculty_portal_dashboard():
     if 'faculty_token' not in session:
@@ -475,7 +360,6 @@ def faculty_portal_notifications():
 
 @app.route('/faculty_portal/courses')
 def faculty_portal_courses():
-    """Faculty courses portal"""
     if 'faculty_token' not in session:
         return redirect(url_for('root'))
     return render_template('faculty_portal/courses.html')

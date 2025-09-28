@@ -1,0 +1,2 @@
+# To use SSE streaming in Streamlit, you need sseclient-py
+# Install with: pip install sseclient-py

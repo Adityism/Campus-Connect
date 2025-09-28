@@ -155,29 +155,29 @@ def stream_deepseek_response(prompt):
             timeout=(30, 300)
         ) as response:
             response.raise_for_status()
-            buffer = ""
-            
+
             for line in response.iter_lines():
-                if line:
-                    try:
-                        decoded_line = json.loads(line.decode('utf-8'))
-                        if 'response' in decoded_line:
-                            buffer += decoded_line['response']
-                        elif 'message' in decoded_line and decoded_line['message'].get('content'):
-                            buffer += decoded_line['message']['content']
-                            
-                        # Break down buffer into words
-                        while ' ' in buffer:
-                            word, buffer = buffer.split(' ', 1)
-                            yield f"data: {json.dumps({'token': word + ' '})}\n\n"
-                            time.sleep(0.02)
-                                
-                    except json.JSONDecodeError:
-                        continue
-                        
-            if buffer:
-                yield f"data: {json.dumps({'token': buffer})}\n\n"
-                
+                if not line:
+                    continue
+                try:
+                    decoded_line = json.loads(line.decode("utf-8"))
+                    token = ""
+
+                    if "response" in decoded_line:
+                        token = decoded_line["response"]
+                    elif "message" in decoded_line and decoded_line["message"].get("content"):
+                        token = decoded_line["message"]["content"]
+
+                    if token:
+                        # Send the chunk as a single SSE message
+                        yield f"data: {json.dumps({'token': token})}\n\n"
+
+                except json.JSONDecodeError:
+                    continue
+
+            # Signal stream finished
+            yield "data: {\"event\": \"end\"}\n\n"
+
     except Exception as e:
         logger.error(f"Streaming error: {e}")
         yield f"data: {json.dumps({'error': str(e)})}\n\n"

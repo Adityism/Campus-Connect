@@ -17,3 +17,6 @@ flask-dance==7.1.0
 requests-oauthlib==2.0.0
 oauthlib==3.2.2
 PyMySQL==1.0.2
+streamlit
+requests
+sseclient-py
