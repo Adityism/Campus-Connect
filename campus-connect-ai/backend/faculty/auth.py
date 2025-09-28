@@ -3,7 +3,7 @@ import datetime
 from functools import wraps
 from flask import request, jsonify
 
-JWT_SECRET = "campus_connect_faculty_secret_key"  # Move to environment variables in production
+JWT_SECRET = "campus_connect_faculty_secret_key" 
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION = 24  # hours
 
