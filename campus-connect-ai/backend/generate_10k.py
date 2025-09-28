@@ -33,7 +33,7 @@ with open(output_file, "w") as f:
     f.write("# Auto-generated 10,000-line test suite for App\n")
     f.write("import app\n\n")
 
-    for i in range(1000):
+    for i in range(2000):
         f.write(f"def test_case_{i}():\n")
         f.write(random_test_body(i))
         f.write("\n\n")
