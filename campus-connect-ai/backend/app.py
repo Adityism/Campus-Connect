@@ -255,7 +255,12 @@ def announcements():
     return render_template('announcements.html')
 
 # ---------------- AI Query Route ----------------
-from ai_model import query_deepseek, stream_deepseek_response
+from rag.query import RAG
+import logging
+
+# Load RAG instance at startup
+rag = RAG.load()
+
 @app.route('/api/query/stream', methods=['POST'])
 def query_api_stream():
     try:
@@ -264,28 +269,45 @@ def query_api_stream():
             return jsonify({'error': 'Invalid or empty JSON received'}), 400
 
         prompt = data.get('prompt', '')
+        history = data.get('history', [])
         if not prompt:
             return jsonify({'error': 'Prompt is required'}), 400
 
-        return Response(stream_with_context(stream_deepseek_response(prompt)), mimetype='text/event-stream')
+        def event_stream():
+            logger.info(f"[Flask] /api/query/stream called with prompt: {prompt[:80]}")
+            res = rag.ask(prompt, history=history, k=6)
+            answer = res.get('answer', '')
+            # Remove any citation/source chunk info from the answer
+            import re
+            clean_answer = re.sub(r" ?as stated in \[SOURCE.*?\]| ?\[Source:.*?\]| ?chunk: [a-f0-9]+", "", answer, flags=re.IGNORECASE)
+            # Stream answer token by token (simulate streaming)
+            for token in clean_answer.split():
+                yield f"data: {{\"token\": \"{token} \"}}\n\n"
+            # At end, do not send sources as a final event
+            # (removed sources/citations from stream)
+        return Response(stream_with_context(event_stream()), mimetype='text/event-stream')
     except Exception as e:
         logger.exception("Error in /api/query/stream endpoint")
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
+#
 @app.route('/api/query', methods=['POST'])
 def query_api():
     try:
         data = request.get_json(force=True, silent=True)
         if not data:
             return jsonify({'error': 'Invalid or empty JSON received'}), 400
-
         prompt = data.get('prompt', '')
+        history = data.get('history', [])
         if not prompt:
             return jsonify({'error': 'Prompt is required'}), 400
-
-        response_text = query_deepseek(prompt)
-        return jsonify({'response': response_text})
-
+        logger.info(f"[Flask] /api/query called with prompt: {prompt[:80]}")
+        res = rag.ask(prompt, history=history, k=6)
+        answer = res.get('answer', '')
+        # Remove any citation/source chunk info from the answer
+        import re
+        clean_answer = re.sub(r" ?as stated in \[SOURCE.*?\]| ?\[Source:.*?\]| ?chunk: [a-f0-9]+", "", answer, flags=re.IGNORECASE)
+        return jsonify({'answer': clean_answer, 'error': res.get('error')})
     except Exception as e:
         logger.exception("Error in /api/query endpoint")
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500

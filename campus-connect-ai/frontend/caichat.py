@@ -1,16 +1,25 @@
-# kichat.py
+# caiichat.py
 import sys
 # force streamlit port if not set
 if not any(arg.startswith("--server.port") for arg in sys.argv):
     sys.argv += ["--server.port", "8505"]
-
 
 import streamlit as st
 import requests
 import json
 import sseclient
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional
+from pathlib import Path
+
+# Try to import local RAG. If present, we'll use it first.
+LOCAL_RAG_AVAILABLE = False
+try:
+    from rag.query import RAG
+    from rag.embedder import Embedder
+    LOCAL_RAG_AVAILABLE = True
+except Exception:
+    LOCAL_RAG_AVAILABLE = False
 
 API_URL = "https://localhost:5001/api/query"
 API_STREAM_URL = "https://localhost:5001/api/query/stream"
@@ -27,24 +36,59 @@ def now_iso():
 def make_user_msg(text: str) -> Dict:
     return {"role": "user", "content": text, "time": now_iso()}
 
-def make_assistant_msg(text: str) -> Dict:
-    return {"role": "assistant", "content": text, "time": now_iso()}
-
+# assistant message now optionally includes sources
+def make_assistant_msg(text: str, sources: Optional[List[Dict]] = None) -> Dict:
+    return {"role": "assistant", "content": text, "time": now_iso(), "sources": sources or []}
 
 # Streaming version for GPT-like typing effect
-
-# Streaming using SSEClient for proper event streaming
+# Existing backend SSE streaming - left intact for fallback
 def stream_prompt_to_backend(prompt: str):
     try:
-        resp = requests.post(API_STREAM_URL, json={"prompt": prompt}, verify=False, stream=True)
+        resp = requests.post(API_STREAM_URL, json={"prompt": prompt, "history": st.session_state["messages"]}, verify=False, stream=True, timeout=REQUEST_TIMEOUT)
         client = sseclient.SSEClient(resp)
         for event in client.events():
-            if event.data.strip():
-                data = json.loads(event.data)
-                if "token" in data:
-                    yield data["token"]
-                elif data.get("event") == "end":
-                    break
+            if not event.data:
+                continue
+            data = event.data.strip()
+            if not data:
+                continue
+            try:
+                payload = json.loads(data)
+            except Exception:
+                # If it's raw text, yield it
+                yield data
+                continue
+            # maintain the backward compatible token/event shapes you used previously
+            if "token" in payload:
+                yield payload["token"]
+            elif payload.get("event") == "end":
+                break
+            elif "text" in payload:
+                yield payload["text"]
+            elif payload.get("error"):
+                yield f"Error: {payload.get('error')}"
+    except Exception as e:
+        yield f"Error: {e}"
+
+# New: local RAG streaming emulator
+def stream_prompt_to_local_rag(prompt: str, rag_instance: "RAG", k: int = 6, chunk_size: int = 64):
+    """
+    Calls rag.ask synchronously and yields the answer in small chunks to simulate streaming.
+    Also returns the sources after the answer is complete via a final dict with key '__SOURCES__'
+    """
+    try:
+        result = rag_instance.ask(prompt, k=k, use_cache=True)
+        answer = result.get("answer", "") or ""
+        sources = result.get("sources", [])
+        # yield in small chunks to simulate streaming
+        i = 0
+        n = len(answer)
+        while i < n:
+            piece = answer[i : i + chunk_size]
+            i += chunk_size
+            yield piece
+        # after full answer, yield a special JSON block indicating sources
+        yield json.dumps({"__SOURCES__": sources})
     except Exception as e:
         yield f"Error: {e}"
 
@@ -54,6 +98,7 @@ def render_messages(messages: List[Dict]):
         content = msg.get("content", "")
         with st.chat_message(role):
             st.markdown(content)
+            # Removed sources/citations display
 
 def save_current_chat(name: str):
     if "saved_chats" not in st.session_state:
@@ -80,12 +125,34 @@ if "saved_chats" not in st.session_state:
 if "server_status" not in st.session_state:
     st.session_state["server_status"] = "unknown"
 
+# ping backend service status (no API shape changed)
 def ping_backend():
     try:
-        r = requests.get(API_URL.replace("/api/query", "/api/services"), timeout=2)
+        r = requests.get(API_URL.replace("/api/query", "/api/services"), timeout=2, verify=False)
         st.session_state["server_status"] = "online" if r.ok else "online (limited)"
     except Exception:
         st.session_state["server_status"] = "offline"
+
+# -------------------------
+# If local RAG available, load it as cached resource
+# -------------------------
+@st.cache_resource
+def get_local_rag():
+    if not LOCAL_RAG_AVAILABLE:
+        return None
+    try:
+        rag = RAG.load()  # uses default config paths
+        # warm up best-effort
+        try:
+            rag.warmup()
+        except Exception:
+            pass
+        return rag
+    except Exception:
+        return None
+
+_local_rag = get_local_rag() if LOCAL_RAG_AVAILABLE else None
+USE_LOCAL_RAG = _local_rag is not None
 
 # -------------------------
 # Sidebar
@@ -156,9 +223,7 @@ st.markdown("## Live Chat")
 
 render_messages(st.session_state["messages"])
 
-
 prompt = st.chat_input("Type your message...")
-
 
 if prompt:
     st.session_state["messages"].append(make_user_msg(prompt))
@@ -168,12 +233,43 @@ if prompt:
     with st.chat_message("assistant"):
         placeholder = st.empty()
         full_reply = ""
-        for token in stream_prompt_to_backend(prompt):
+        collected_sources = None
+
+        # If local RAG is available, use it first. Otherwise fallback to backend SSE.
+        if USE_LOCAL_RAG:
+            # Use the RAG pipeline and simulate streaming
+            stream_gen = stream_prompt_to_local_rag(prompt, _local_rag, k=6, chunk_size=128)
+        else:
+            # fallback to backend streaming API
+            stream_gen = stream_prompt_to_backend(prompt)
+
+        for token in stream_gen:
+            # local RAG yields a final JSON with "__SOURCES__"
+            if isinstance(token, str) and token.startswith("Error:"):
+                # show error inline and stop
+                full_reply += "\n" + token
+                placeholder.markdown(full_reply)
+                break
+            # handle special JSON sources marker
+            if isinstance(token, str) and token.strip().startswith("{"):
+                try:
+                    j = json.loads(token)
+                    if "__SOURCES__" in j:
+                        collected_sources = j["__SOURCES__"]
+                        # don't append the JSON marker to reply
+                        continue
+                except Exception:
+                    # not our special JSON, just append raw token
+                    pass
+            # append token to display
             full_reply += token
             placeholder.markdown(full_reply + " ▍")
-        placeholder.markdown(full_reply)
-    st.session_state["messages"].append(make_assistant_msg(full_reply))
 
+        # final display (remove trailing caret)
+        placeholder.markdown(full_reply)
+    # store assistant message without sources/citations
+    st.session_state["messages"].append(make_assistant_msg(full_reply, sources=None))
+    # Removed sources/citations expander after streaming
 
 # Remove fallback "Send last message" button since streaming is now default and send_prompt_to_backend is gone
 
