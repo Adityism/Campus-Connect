@@ -80,13 +80,11 @@ def stream_prompt_to_local_rag(prompt: str, rag_instance: "RAG", k: int = 6, chu
         result = rag_instance.ask(prompt, k=k, use_cache=True)
         answer = result.get("answer", "") or ""
         sources = result.get("sources", [])
-        # yield in small chunks to simulate streaming
-        i = 0
-        n = len(answer)
-        while i < n:
-            piece = answer[i : i + chunk_size]
-            i += chunk_size
-            yield piece
+        # yield word by word for GPT-like streaming
+        words = answer.split()
+        for idx, word in enumerate(words):
+            # Add a space after each word except the last
+            yield word + (" " if idx < len(words) - 1 else "")
         # after full answer, yield a special JSON block indicating sources
         yield json.dumps({"__SOURCES__": sources})
     except Exception as e:
@@ -237,8 +235,8 @@ if prompt:
 
         # If local RAG is available, use it first. Otherwise fallback to backend SSE.
         if USE_LOCAL_RAG:
-            # Use the RAG pipeline and simulate streaming
-            stream_gen = stream_prompt_to_local_rag(prompt, _local_rag, k=6, chunk_size=128)
+            # Use the RAG pipeline and simulate streaming (word-by-word)
+            stream_gen = stream_prompt_to_local_rag(prompt, _local_rag, k=6, chunk_size=1)
         else:
             # fallback to backend streaming API
             stream_gen = stream_prompt_to_backend(prompt)

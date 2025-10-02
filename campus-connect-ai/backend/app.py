@@ -280,9 +280,11 @@ def query_api_stream():
             # Remove any citation/source chunk info from the answer
             import re
             clean_answer = re.sub(r" ?as stated in \[SOURCE.*?\]| ?\[Source:.*?\]| ?chunk: [a-f0-9]+", "", answer, flags=re.IGNORECASE)
+            import time
             # Stream answer token by token (simulate streaming)
             for token in clean_answer.split():
                 yield f"data: {{\"token\": \"{token} \"}}\n\n"
+                time.sleep(0.03)  # Add delay for visible streaming
             # At end, do not send sources as a final event
             # (removed sources/citations from stream)
         return Response(stream_with_context(event_stream()), mimetype='text/event-stream')

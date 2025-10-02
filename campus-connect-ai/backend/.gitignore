@@ -47,3 +47,4 @@ ssl/
 
 # Ignore knowledge base backups
 knowledge_base.json.bak
+keys/*.json

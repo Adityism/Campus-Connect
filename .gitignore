@@ -1,3 +1,6 @@
+# Prevent secrets from being pushed
+campusconnectkey.json
+campus-connect-ai/backend/keys/campusconnectkey.json
 # .gitignore
 # Python
 __pycache__/
